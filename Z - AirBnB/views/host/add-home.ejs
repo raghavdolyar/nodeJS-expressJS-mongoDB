@@ -10,6 +10,11 @@
   <form action="/host/add-home" method="POST" class="flex flex-col gap-4 w-80" autocomplete="off">
 
     <div class="flex flex-col gap-1.5">
+      <label for="id" class="text-sm text-gray-400">Unique ID</label>
+      <input type="text" name="id" id="id" required class="bg-[#1c1c21] border border-white/10 text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#e51414] transition-colors placeholder-gray-600" placeholder="e.g. 124" />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
       <label for="housename" class="text-sm text-gray-400">House Name</label>
       <input type="text" name="housename" id="housename" required class="bg-[#1c1c21] border border-white/10 text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#e51414] transition-colors placeholder-gray-600" placeholder="e.g. Cozy Mountain Cabin" />
     </div>
