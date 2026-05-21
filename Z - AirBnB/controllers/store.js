@@ -1,4 +1,5 @@
 const Home = require('../models/home');
+const Favourite = require('../models/favourite');
 
 exports.getIndex = (req, res, next) => {
   Home.fetchAll(regHomes => {
@@ -39,7 +40,12 @@ exports.getFavouriteList = (req, res, next) => {
 
 exports.postAddToFavourite = (req, res, next) => {
   console.log('came to add to favourites', req.body);
-  res.redirect('/favourites');
+  Favourite.addToFavourite(req.body.id, err => {
+    if (err) {
+      console.log('error while marking favourites');
+    }
+    res.redirect('/favourites');
+  });
 };
 
 exports.getHomeDetails = (req, res, next) => {
