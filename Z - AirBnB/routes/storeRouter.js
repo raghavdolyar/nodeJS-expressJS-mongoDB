@@ -12,7 +12,8 @@ router.get('/favourites', storeController.getFavouriteList);
 router.get('/homes/:homeId', storeController.getHomeDetails);
 
 router.post('/favourites', storeController.postAddToFavourite);
+router.post('/remove-favourite', storeController.postRemoveFromFavourite);
 
 module.exports = {
-  storeRouter: router,
+	storeRouter: router,
 };

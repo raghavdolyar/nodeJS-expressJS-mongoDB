@@ -4,3 +4,11 @@ exports.pageNotFound = (req, res, next) => {
 		currentPage: '404',
 	});
 };
+
+exports.globalErrorHandler = (err, req, res, next) => {
+	console.error(err.stack);
+	res.status(500).render('500', {
+		pageTitle: '500 — Server Error',
+		currentPage: '500',
+	});
+};

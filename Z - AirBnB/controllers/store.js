@@ -1,66 +1,91 @@
 const Home = require('../models/home');
 const Favourite = require('../models/favourite');
 
-exports.getIndex = (req, res, next) => {
-  Home.fetchAll(regHomes => {
-    res.render('store/index', {
-      homes: regHomes,
-      pageTitle: 'airbnb',
-      currentPage: 'index',
-    });
-  });
+exports.getIndex = async (req, res, next) => {
+	try {
+		const regHomes = await Home.fetchAll();
+		res.render('store/index', {
+			homes: regHomes,
+			pageTitle: 'airbnb',
+			currentPage: 'index',
+		});
+	} catch (err) {
+		next(err);
+	}
 };
 
-exports.getHomes = (req, res, next) => {
-  Home.fetchAll(regHomes => {
-    res.render('store/user-home-list', {
-      homes: regHomes,
-      pageTitle: 'homes list',
-      currentPage: 'homes',
-    });
-  });
+exports.getHomes = async (req, res, next) => {
+	try {
+		const regHomes = await Home.fetchAll();
+		res.render('store/user-home-list', {
+			homes: regHomes,
+			pageTitle: 'homes list',
+			currentPage: 'homes',
+		});
+	} catch (err) {
+		next(err);
+	}
 };
 
 exports.getBookings = (req, res, next) => {
-  res.render('store/bookings', {
-    pageTitle: 'my bookings',
-    currentPage: 'bookings',
-  });
+	res.render('store/bookings', {
+		pageTitle: 'my bookings',
+		currentPage: 'bookings',
+	});
 };
 
-exports.getFavouriteList = (req, res, next) => {
-  Home.fetchAll(regHomes => {
-    res.render('store/favourite-list', {
-      homes: regHomes,
-      pageTitle: 'my favourites',
-      currentPage: 'favourites',
-    });
-  });
+exports.getFavouriteList = async (req, res, next) => {
+	try {
+		const regHomes = await Home.fetchAll();
+		const favouriteIds = await Favourite.getFavourites();
+		const favouriteHomes = regHomes.filter(home =>
+			favouriteIds.includes(home.id),
+		);
+
+		res.render('store/favourite-list', {
+			homes: favouriteHomes,
+			pageTitle: 'my favourites',
+			currentPage: 'favourites',
+		});
+	} catch (err) {
+		next(err);
+	}
 };
 
-exports.postAddToFavourite = (req, res, next) => {
-  console.log('came to add to favourites', req.body);
-  Favourite.addToFavourite(req.body.id, err => {
-    if (err) {
-      console.log('error while marking favourites');
-    }
-    res.redirect('/favourites');
-  });
+exports.postAddToFavourite = async (req, res, next) => {
+	try {
+		await Favourite.addToFavourite(req.body.homeId);
+		res.redirect('/favourites');
+	} catch (err) {
+		next(err);
+	}
 };
 
-exports.getHomeDetails = (req, res, next) => {
-  const homeId = req.params.homeId;
-  Home.findById(homeId, house => {
-    if (!house) {
-      console.log('home not found');
-      res.redirect('/homes');
-    } else {
-      res.render('store/home-detail', {
-        home: house,
-        homeId: homeId,
-        pageTitle: `home detail ${homeId}`,
-        currentPage: 'homes',
-      });
-    }
-  });
+exports.postRemoveFromFavourite = async (req, res, next) => {
+	try {
+		await Favourite.removeFromFavourite(req.body.homeId);
+		res.redirect('/favourites');
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getHomeDetails = async (req, res, next) => {
+	try {
+		const homeId = req.params.homeId;
+		const house = await Home.findById(homeId);
+
+		if (!house) {
+			return res.redirect('/homes');
+		}
+
+		res.render('store/home-detail', {
+			home: house,
+			homeId: homeId,
+			pageTitle: `home detail ${homeId}`,
+			currentPage: 'homes',
+		});
+	} catch (err) {
+		next(err);
+	}
 };

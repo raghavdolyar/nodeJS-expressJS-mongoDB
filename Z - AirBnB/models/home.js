@@ -1,42 +1,39 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const rootDir = require('../utils/path-util');
 
 const homeDBPath = path.join(rootDir, 'database/homes.json');
 
 module.exports = class Home {
-  constructor(id, name, location, price, rating, photoUrl) {
-    this.id = id;
-    this.name = name;
-    this.location = location;
-    this.price = price;
-    this.rating = rating;
-    this.photoUrl = photoUrl;
-  }
+	constructor(id, name, location, price, rating, photoUrl) {
+		this.id = id;
+		this.name = name;
+		this.location = location;
+		this.price = price;
+		this.rating = rating;
+		this.photoUrl = photoUrl;
+	}
 
-  save() {
-    Home.fetchAll(homes => {
-      homes.push(this);
-      fs.writeFile(homeDBPath, JSON.stringify(homes), err => {
-        console.error(err);
-      });
-    });
-  }
+	async save() {
+		const homes = await Home.fetchAll();
+		homes.push(this);
+		await fs.writeFile(homeDBPath, JSON.stringify(homes));
+	}
 
-  static fetchAll(callback) {
-    fs.readFile(homeDBPath, (err, data) => {
-      if (err) {
-        console.log('Error reading homes DB:', err);
-        return callback([]);
-      }
-      callback(data.length ? JSON.parse(data) : []);
-    });
-  }
+	static async fetchAll() {
+		try {
+			const data = await fs.readFile(homeDBPath, 'utf-8');
+			return data.length ? JSON.parse(data) : [];
+		} catch (err) {
+			if (err.code === 'ENOENT') {
+				return [];
+			}
+			throw err;
+		}
+	}
 
-  static findById(homeId, callback) {
-    this.fetchAll(homes => {
-      const homeFound = homes.find(home => home.id === homeId);
-      callback(homeFound);
-    });
-  }
+	static async findById(homeId) {
+		const homes = await this.fetchAll();
+		return homes.find(home => home.id === homeId);
+	}
 };
