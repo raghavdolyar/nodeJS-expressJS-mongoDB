@@ -37,13 +37,24 @@ exports.getFavouriteList = (req, res, next) => {
   });
 };
 
+exports.postAddToFavourite = (req, res, next) => {
+  console.log('came to add to favourites', req.body);
+  res.redirect('/favourites');
+};
+
 exports.getHomeDetails = (req, res, next) => {
   const homeId = req.params.homeId;
-  console.log('At home details page :', homeId);
-  // res.render('store/home-detail', {
-  //   homeId: homeId,
-  //   pageTitle: `home detail ${homeId}`,
-  //   currentPage: 'homes',
-  // });
-  res.send('Details of Home : ' + homeId);
+  Home.findById(homeId, house => {
+    if (!house) {
+      console.log('home not found');
+      res.redirect('/homes');
+    } else {
+      res.render('store/home-detail', {
+        home: house,
+        homeId: homeId,
+        pageTitle: `home detail ${homeId}`,
+        currentPage: 'homes',
+      });
+    }
+  });
 };
