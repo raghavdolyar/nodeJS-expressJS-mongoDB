@@ -37,7 +37,7 @@ exports.getBookings = (req, res, next) => {
 exports.getFavouriteList = async (req, res, next) => {
 	try {
 		const regHomes = await Home.fetchAll();
-		const favouriteIds = await Favourite.getFavourites();
+		const favouriteIds = await Favourite.fetchAll();
 		const favouriteHomes = regHomes.filter(home =>
 			favouriteIds.includes(home.id),
 		);
@@ -54,7 +54,7 @@ exports.getFavouriteList = async (req, res, next) => {
 
 exports.postAddToFavourite = async (req, res, next) => {
 	try {
-		await Favourite.addToFavourite(req.body.homeId);
+		await Favourite.add(req.body.homeId);
 		res.redirect('/favourites');
 	} catch (err) {
 		next(err);
@@ -63,7 +63,7 @@ exports.postAddToFavourite = async (req, res, next) => {
 
 exports.postRemoveFromFavourite = async (req, res, next) => {
 	try {
-		await Favourite.removeFromFavourite(req.body.homeId);
+		await Favourite.remove(req.body.homeId);
 		res.redirect('/favourites');
 	} catch (err) {
 		next(err);
