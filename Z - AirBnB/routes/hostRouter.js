@@ -11,6 +11,7 @@ router.get('/edit-home/:homeId', hostController.getEditHome);
 
 router.post('/add-home', hostController.postAddHome);
 router.post('/edit-home', hostController.postEditHome);
+router.post('/delete-home/:homeId', hostController.postDeleteHome);
 
 module.exports = {
 	hostRouter: router,

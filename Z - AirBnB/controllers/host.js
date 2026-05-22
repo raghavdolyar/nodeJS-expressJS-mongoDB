@@ -80,3 +80,12 @@ exports.postEditHome = async (req, res, next) => {
 		next(err);
 	}
 };
+
+exports.postDeleteHome = async (req, res, next) => {
+	try {
+		await Home.deleteById(req.params.homeId);
+		res.redirect('/host/home-list');
+	} catch (err) {
+		next(err);
+	}
+};

@@ -2,6 +2,17 @@
 
   <div class="relative">
     <img src="<%= home.photoUrl %>" alt="<%= home.name %>" class="w-full h-44 object-cover" />
+
+    <div class="absolute top-2.5 right-2.5 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <form action="/favourites/delete/<%= home.id %>" method="POST">
+        <button class="p-1.5 rounded-lg bg-black/60 hover:bg-[#e51414]/80 text-white backdrop-blur-sm transition-colors" title="Remove from favourites">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </form>
+    </div>
   </div>
 
   <div class="p-4 flex flex-col gap-3">

@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const rootDir = require('../utils/path-util');
+const Favourite = require('./favourite');
 
 const homeDBPath = path.join(rootDir, 'database/homes.json');
 
@@ -42,5 +43,16 @@ module.exports = class Home {
 	static async findById(homeId) {
 		const homes = await this.fetchAll();
 		return homes.find(home => home.id === homeId);
+	}
+
+	static async deleteById(homeId) {
+		const [homes] = await Promise.all([
+			this.fetchAll(),
+			Favourite.remove(homeId),
+		]);
+
+		const updated = homes.filter(home => home.id !== homeId);
+
+		await fs.writeFile(homeDBPath, JSON.stringify(updated));
 	}
 };

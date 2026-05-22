@@ -65,7 +65,7 @@ exports.postAddToFavourite = async (req, res, next) => {
 
 exports.postRemoveFromFavourite = async (req, res, next) => {
 	try {
-		await Favourite.remove(req.body.homeId);
+		await Favourite.remove(req.params.homeId);
 		res.redirect('/favourites');
 	} catch (err) {
 		next(err);
