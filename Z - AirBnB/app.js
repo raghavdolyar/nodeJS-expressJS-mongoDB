@@ -7,7 +7,8 @@ const express = require('express');
 // local modules
 const { storeRouter } = require('./routes/storeRouter');
 const { hostRouter } = require('./routes/hostRouter');
-const { notFoundRouter } = require('./routes/errorRouter');
+const { errorRouter } = require('./routes/errorRouter');
+const { globalErrorHandler } = require('./controllers/errors');
 const rootDir = require('./utils/path-util');
 
 const app = express();
@@ -22,7 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(storeRouter);
 app.use('/host', hostRouter);
-app.use(notFoundRouter);
+app.use(errorRouter);
+
+app.use(globalErrorHandler);
 
 const PORT = 3000;
 

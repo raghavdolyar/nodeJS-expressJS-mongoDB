@@ -3,11 +3,10 @@ const express = require('express');
 const router = express.Router();
 
 // local modules
-const errorsController = require('../controllers/errors');
+const errorController = require('../controllers/errors');
 
-router.use('/', errorsController.pageNotFound);
-router.use('/', errorsController.globalErrorHandler);
+router.use('/', errorController.pageNotFound);
 
 module.exports = {
-	notFoundRouter: router,
+	errorRouter: router,
 };

@@ -36,11 +36,13 @@ exports.getBookings = (req, res, next) => {
 
 exports.getFavouriteList = async (req, res, next) => {
 	try {
-		const regHomes = await Home.fetchAll();
-		const favouriteIds = await Favourite.fetchAll();
-		const favouriteHomes = regHomes.filter(home =>
-			favouriteIds.includes(home.id),
-		);
+		const [regHomes, favouriteIds] = await Promise.all([
+			Home.fetchAll(),
+			Favourite.fetchAll(),
+		]);
+
+		const favouriteSet = new Set(favouriteIds);
+		const favouriteHomes = regHomes.filter(home => favouriteSet.has(home.id));
 
 		res.render('store/favourite-list', {
 			homes: favouriteHomes,

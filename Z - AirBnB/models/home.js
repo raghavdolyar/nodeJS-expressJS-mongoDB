@@ -5,8 +5,7 @@ const rootDir = require('../utils/path-util');
 const homeDBPath = path.join(rootDir, 'database/homes.json');
 
 module.exports = class Home {
-	constructor(id, name, location, price, rating, photoUrl) {
-		this.id = id;
+	constructor(name, location, price, rating, photoUrl) {
 		this.name = name;
 		this.location = location;
 		this.price = price;
@@ -16,7 +15,15 @@ module.exports = class Home {
 
 	async save() {
 		const homes = await Home.fetchAll();
-		homes.push(this);
+		if (this.id) {
+			const index = homes.findIndex(home => home.id === this.id);
+			if (index !== -1) {
+				homes[index] = this;
+			}
+		} else {
+			this.id = (homes.length + 1).toString();
+			homes.push(this);
+		}
 		await fs.writeFile(homeDBPath, JSON.stringify(homes));
 	}
 
