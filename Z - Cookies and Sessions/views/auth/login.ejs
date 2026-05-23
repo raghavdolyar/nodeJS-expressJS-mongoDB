@@ -1,0 +1,28 @@
+<%- include('../partials/head') %>
+
+<div class="w-full max-w-sm mt-10">
+  <h2 class="text-2xl font-bold text-white mb-6 text-center">Welcome Back</h2>
+
+  <form action="/login" method="POST" class="bg-[#1a1a1f] rounded-xl p-8 flex flex-col gap-4 shadow-lg">
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm text-gray-400 font-medium">Email/Username</label>
+      <input type="text" name="username" placeholder="john doe" class="bg-[#111114] text-white text-sm px-4 py-2.5 rounded-lg border border-[#2a2a2f] focus:outline-none focus:border-[#e51414] transition-colors placeholder-gray-600" autocomplete="off" required />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm text-gray-400 font-medium">Password</label>
+      <input type="password" name="password" placeholder="••••••••" class="bg-[#111114] text-white text-sm px-4 py-2.5 rounded-lg border border-[#2a2a2f] focus:outline-none focus:border-[#e51414] transition-colors placeholder-gray-600" autocomplete="off" required />
+    </div>
+
+    <button type="submit" class="mt-2 bg-[#e51414] hover:bg-[#c10d0d] text-white text-sm font-semibold py-2.5 rounded-lg transition-colors">
+      Log In
+    </button>
+
+  </form>
+</div>
+
+</div>
+</body>
+
+</html>
