@@ -1,0 +1,22 @@
+<%- include('../partials/head') %>
+
+<header class="mb-8 text-center">
+  <h2 class="text-3xl font-semibold text-white tracking-tight">
+    Find your <span class="text-[#e51414]">Favourites</span>
+  </h2>
+</header>
+
+<main class="w-full flex flex-col gap-6 items-center mb-[10vh]">
+
+  <div class="flex flex-wrap gap-5 justify-center w-[80vw]">
+    <% homes.forEach(home => { %>
+    <%- include('../partials/favourite-card', { home }) %>
+    <% }) %>
+  </div>
+
+</main>
+
+</div>
+</body>
+
+</html>
