@@ -11,6 +11,7 @@ exports.getIndex = async (req, res, next) => {
 			homes: homes,
 			pageTitle: 'airbnb',
 			currentPage: 'index',
+			isLoggedIn: req.isLoggedIn,
 		});
 	} catch (error) {
 		next(error);
@@ -24,6 +25,7 @@ exports.getHomes = async (req, res, next) => {
 			homes: regHomes,
 			pageTitle: 'homes list',
 			currentPage: 'homes',
+			isLoggedIn: req.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);
@@ -34,6 +36,7 @@ exports.getBookings = (req, res, next) => {
 	res.render('store/bookings', {
 		pageTitle: 'my bookings',
 		currentPage: 'bookings',
+		isLoggedIn: req.isLoggedIn,
 	});
 };
 
@@ -46,6 +49,7 @@ exports.getFavouriteList = async (req, res, next) => {
 			homes: favouriteHomes,
 			pageTitle: 'my favourites',
 			currentPage: 'favourites',
+			isLoggedIn: req.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);
@@ -67,6 +71,7 @@ exports.getHomeDetails = async (req, res, next) => {
 			homeId: homeId,
 			pageTitle: `home detail ${homeId}`,
 			currentPage: 'homes',
+			isLoggedIn: req.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);

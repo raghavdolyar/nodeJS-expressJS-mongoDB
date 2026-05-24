@@ -5,6 +5,7 @@ exports.getAddHome = (req, res, next) => {
 		pageTitle: 'add home',
 		currentPage: 'add-home',
 		editing: false,
+		isLoggedIn: req.isLoggedIn,
 	});
 };
 
@@ -24,6 +25,7 @@ exports.getEditHome = async (req, res, next) => {
 			pageTitle: 'edit home',
 			currentPage: 'host-homes',
 			editing: editing,
+			isLoggedIn: req.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);
@@ -37,6 +39,7 @@ exports.getHostHomes = async (req, res, next) => {
 			homes: regHomes,
 			pageTitle: 'host homes',
 			currentPage: 'host-homes',
+			isLoggedIn: req.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);

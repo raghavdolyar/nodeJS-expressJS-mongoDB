@@ -1,26 +1,32 @@
 <nav class="w-full bg-[#e51414] px-6 py-3 flex items-center gap-2">
-  <a href="/homes" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
-      <%= currentPage === 'homes' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
-    Homes
+  <a href="/" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
+      <%= currentPage === 'index' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
+    AirBnB
   </a>
-  <a href="/bookings" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
+  <% if (isLoggedIn) { %>
+    <a href="/homes" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
+        <%= currentPage === 'homes' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
+      Homes
+    </a>
+    <a href="/bookings" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
       <%= currentPage === 'bookings' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
-    Bookings
-  </a>
-  <a href="/favourites" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
+      Bookings
+    </a>
+    <a href="/favourites" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
       <%= currentPage === 'favourites' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
-    Favourites
-  </a>
-  <a href="/host/home-list" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
+      Favourites
+    </a>
+    <a href="/host/home-list" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
       <%= currentPage === 'host-homes' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
-    Host Homes
-  </a>
-  <a href="/host/add-home" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
+      Host Homes
+    </a>
+    <a href="/host/add-home" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors
       <%= currentPage === 'add-home' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
-    Add Home
-  </a>
+      Add Home
+    </a>
+  <% } %>
   <a href="/login" class="ml-auto px-4 py-1.5 rounded-md text-sm font-medium text-white hover:bg-[#c10d0d] transition-colors
-      <%= currentPage === 'login' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
+  <%= currentPage === 'login' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
     Log In
   </a>
 </nav>
