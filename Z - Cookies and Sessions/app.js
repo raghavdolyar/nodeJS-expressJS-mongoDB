@@ -39,11 +39,33 @@ const DB_PATH = process.env.MONGO_URL;
 	try {
 		await mongoose.connect(DB_PATH);
 		console.log('Connected to MongoDB!');
+
 		app.listen(PORT, () => {
 			console.log(`Server running on address http://localhost:${PORT}`);
 		});
 	} catch (err) {
-		console.error('Server failed to start :', err);
+		const msg = err.message || String(err);
+		const isIpWhitelistIssue = /whitelist|IP that isn't/i.test(msg);
+
+		if (isIpWhitelistIssue) {
+			console.error(
+				'\nMongoDB connection failed: your current IP is likely NOT on the Atlas IP Access List.',
+			);
+
+			try {
+				const res = await fetch('https://api.ipify.org?format=json');
+				const { ip } = await res.json();
+				console.error(`Your current public IP appears to be: ${ip}`);
+				console.error('Add this IP in Atlas if it is missing.\n');
+			} catch {
+				console.error(
+					'Could not detect public IP. Check https://whatismyipaddress.com/ and add that IP in Atlas.\n',
+				);
+			}
+		} else {
+			console.error('Server failed to start :', err);
+		}
+
 		process.exit(1);
 	}
 })();
