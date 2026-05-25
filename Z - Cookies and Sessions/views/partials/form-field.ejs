@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-1.5">
-  <label for="<%= id %>" class="text-sm text-gray-400 font-medium"><%= label %></label>
+  <label for="<%= id %>" class="text-sm text-gray-600 dark:text-gray-400 font-medium"><%= label %></label>
   <input
     type="<%= typeof type !== 'undefined' ? type : 'text' %>"
     id="<%= id %>"
@@ -11,8 +11,8 @@
     <% if (typeof required !== 'undefined' && required) { %>required<% } %>
   />
   <% if (typeof errorMsg !== 'undefined' && errorMsg) { %>
-    <p class="text-xs text-[#ff8a8a]"><%= errorMsg %></p>
+    <p class="text-xs text-red-500 dark:text-red-400"><%= errorMsg %></p>
   <% } else if (typeof hint !== 'undefined' && hint) { %>
-    <p class="text-xs text-gray-500"><%= hint %></p>
+    <p class="text-xs text-gray-400 dark:text-gray-500"><%= hint %></p>
   <% } %>
 </div>

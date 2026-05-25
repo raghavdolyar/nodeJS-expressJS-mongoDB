@@ -1,5 +1,5 @@
 <% if ((validationErrors || []).length) { %>
-  <ul class="mb-5 rounded-xl border border-[#e51414]/40 bg-[#e51414]/10 px-4 py-3 text-sm text-[#ff8a8a] list-disc list-inside space-y-1">
+  <ul class="mb-5 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400 list-disc list-inside space-y-1">
     <% validationErrors.forEach(err => { %>
       <li><%= err.msg %></li>
     <% }) %>

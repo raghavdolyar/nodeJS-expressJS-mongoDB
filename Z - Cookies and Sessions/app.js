@@ -47,6 +47,9 @@ app.use('/host', (req, res, next) => {
 	if (!req.session.isLoggedIn) {
 		return res.redirect('/login');
 	}
+	if (req.session.user?.user_type !== 'host') {
+		return res.redirect('/');
+	}
 	next();
 });
 app.use('/host', hostRouter);

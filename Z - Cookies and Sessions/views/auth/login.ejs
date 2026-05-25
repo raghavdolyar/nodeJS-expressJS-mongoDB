@@ -5,16 +5,25 @@
   const fieldError = (path) => errors.find(err => err.path === path)?.msg;
   const input = oldInput || {};
   const inputClass = (path) =>
-    'bg-[#111114] text-white text-sm px-4 py-2.5 rounded-lg border focus:outline-none focus:border-[#e51414] focus:ring-1 focus:ring-[#e51414]/30 transition-colors placeholder-gray-600 ' +
-    (fieldError(path) ? 'border-[#e51414]/70' : 'border-[#2a2a2f]');
+    'bg-gray-50 dark:bg-[#111114] text-gray-900 dark:text-white text-sm px-4 py-2.5 rounded-lg border focus:outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600 ' +
+    (fieldError(path) ? 'border-red-400 dark:border-red-500/70' : 'border-gray-200 dark:border-[#2a2a2f]');
 %>
 
 <div class="w-full max-w-sm mt-10">
-  <h2 class="text-2xl font-bold text-white mb-6 text-center">Welcome <span class="text-[#e51414]">Back</span></h2>
+  <div class="flex justify-center mb-6">
+    <span class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#D6001C]/10 dark:bg-[#D6001C]/20">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6 text-[#D6001C]">
+        <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+        <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+      </svg>
+    </span>
+  </div>
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1 text-center">Welcome Back</h2>
+  <p class="text-gray-400 dark:text-gray-500 text-sm text-center mb-6">Sign in to your account</p>
 
   <%- include('../partials/validation-errors') %>
 
-  <form action="/login" method="POST" class="bg-[#1a1a1f] rounded-xl p-8 flex flex-col gap-4 shadow-lg">
+  <form action="/login" method="POST" class="bg-white dark:bg-[#1a1a1f] rounded-2xl p-8 flex flex-col gap-4 shadow-sm dark:shadow-lg border border-gray-100 dark:border-white/6">
 
     <%- include('../partials/form-field', {
       id: 'email',
@@ -41,13 +50,13 @@
       required: true
     }) %>
 
-    <button type="submit" class="mt-2 bg-[#e51414] hover:bg-[#c10d0d] text-white text-sm font-semibold py-2.5 rounded-lg transition-colors">
+    <button type="submit" class="mt-2 bg-[#D6001C] hover:bg-[#b8001a] active:scale-[0.98] text-white text-sm font-semibold py-2.5 rounded-lg transition-all shadow-sm">
       Log In
     </button>
 
-    <p class="text-center text-sm text-gray-500">
+    <p class="text-center text-sm text-gray-400 dark:text-gray-500">
       Don't have an account?
-      <a href="/signup" class="text-[#e51414] hover:text-[#ff2a2a] font-medium transition-colors">Sign up</a>
+      <a href="/signup" class="text-[#3b82f6] hover:text-blue-500 font-medium transition-colors">Sign up</a>
     </p>
 
   </form>

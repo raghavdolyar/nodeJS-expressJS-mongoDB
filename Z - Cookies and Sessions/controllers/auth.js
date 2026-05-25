@@ -178,6 +178,7 @@ exports.postLogin = [
 
 			req.session.user = {
 				_id: user._id.toString(),
+				user_type: user.user_type,
 			};
 
 			await new Promise((resolve, reject) => {

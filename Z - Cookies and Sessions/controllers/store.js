@@ -4,8 +4,8 @@ const User = require('../models/user');
 exports.getIndex = async (req, res, next) => {
 	try {
 		const regHomes = await Home.find();
-		const homes = regHomes.slice(0, 4);
 		homes.sort((a, b) => b.rating - a.rating);
+		const homes = regHomes.slice(0, 4);
 
 		res.render('store/index', {
 			homes: homes,
