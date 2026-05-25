@@ -1,19 +1,17 @@
 <%- include('../partials/head') %>
 
-<header class="mb-8 text-center">
-  <h2 class="text-3xl font-semibold text-white tracking-tight">
-    Find your <span class="text-[#e51414]">Favourites</span>
-  </h2>
-</header>
+<%- include('../partials/page-header', {
+  eyebrow: 'Saved',
+  titleHtml: 'Your <span class="text-[#e51414]">favourites</span>',
+  subtitle: 'Homes you have saved for later.'
+}) %>
 
-<main class="w-full flex flex-col gap-6 items-center mb-[10vh]">
-
-  <div class="flex flex-wrap gap-5 justify-center w-[80vw]">
+<main class="w-full max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center sm:justify-items-stretch">
     <% homes.forEach(home => { %>
     <%- include('../partials/favourite-card', { home }) %>
     <% }) %>
   </div>
-
 </main>
 
 </div>

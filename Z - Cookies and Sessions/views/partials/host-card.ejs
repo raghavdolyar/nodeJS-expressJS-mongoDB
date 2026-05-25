@@ -1,7 +1,7 @@
-<div class="bg-[#1c1c21] border border-white/10 rounded-xl overflow-hidden w-75 transition-colors group">
+<div class="bg-[#161618] border border-white/8 rounded-xl overflow-hidden w-full max-w-xs sm:max-w-none transition-all duration-200 group hover:border-[#e51414]/25 hover:shadow-lg hover:shadow-black/30">
 
-  <div class="relative">
-    <img src="<%= home.photo_url %>" alt="<%= home.name %>" class="w-full h-44 object-cover brightness-90" />
+  <div class="relative overflow-hidden">
+    <img src="<%= home.photo_url %>" alt="<%= home.name %>" class="w-full h-44 object-cover transition-transform duration-300 group-hover:scale-105" />
 
     <div class="absolute top-2.5 right-2.5 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
       <a href="/host/edit-home/<%= home._id %>?editing=true" class="p-1.5 rounded-lg bg-black/60 hover:bg-white/20 text-white backdrop-blur-sm transition-colors" title="Edit">
@@ -22,7 +22,7 @@
       </form>
     </div>
 
-    <span class="absolute bottom-2.5 left-3 text-[10px] font-semibold tracking-wide uppercase bg-black/60 text-gray-300 backdrop-blur-sm px-2 py-0.5 rounded-full">
+    <span class="absolute bottom-2.5 left-3 text-[10px] font-semibold tracking-wide uppercase bg-[#e51414]/90 text-white backdrop-blur-sm px-2 py-0.5 rounded-full">
       Your listing
     </span>
   </div>

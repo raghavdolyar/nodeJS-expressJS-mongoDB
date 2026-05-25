@@ -12,11 +12,11 @@ require('dotenv').config();
 const DB_PATH = process.env.MONGO_URL;
 
 // local modules
-const { authRouter } = require('./routes/authRouter');
-const { storeRouter } = require('./routes/storeRouter');
-const { hostRouter } = require('./routes/hostRouter');
-const { errorRouter } = require('./routes/errorRouter');
-const { globalErrorHandler } = require('./controllers/errors');
+const { authRouter } = require('./routes/auth');
+const { storeRouter } = require('./routes/store');
+const { hostRouter } = require('./routes/host');
+const { errorRouter } = require('./routes/error');
+const { globalErrorHandler } = require('./controllers/error');
 const rootDir = require('./utils/path-util');
 
 const app = express();

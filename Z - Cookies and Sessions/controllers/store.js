@@ -7,8 +7,6 @@ exports.getIndex = async (req, res, next) => {
 		const homes = regHomes.slice(0, 4);
 		homes.sort((a, b) => b.rating - a.rating);
 
-		console.log(req.session);
-
 		res.render('store/index', {
 			homes: homes,
 			pageTitle: 'airbnb',
