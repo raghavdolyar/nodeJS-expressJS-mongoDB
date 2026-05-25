@@ -6,6 +6,7 @@ exports.getAddHome = (req, res, next) => {
 		currentPage: 'add-home',
 		editing: false,
 		isLoggedIn: req.session.isLoggedIn,
+		user: req.session.user,
 	});
 };
 
@@ -26,6 +27,7 @@ exports.getEditHome = async (req, res, next) => {
 			currentPage: 'host-homes',
 			editing: editing,
 			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -40,6 +42,7 @@ exports.getHostHomes = async (req, res, next) => {
 			pageTitle: 'host homes',
 			currentPage: 'host-homes',
 			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);

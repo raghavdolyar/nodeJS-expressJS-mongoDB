@@ -12,6 +12,7 @@ exports.getLogin = (req, res, next) => {
 		isLoggedIn: req.session.isLoggedIn,
 		oldInput: {},
 		validationErrors: [],
+		user: {},
 	});
 };
 
@@ -22,6 +23,7 @@ exports.getSignup = (req, res, next) => {
 		isLoggedIn: req.session.isLoggedIn,
 		oldInput: {},
 		validationErrors: [],
+		user: {},
 	});
 };
 
@@ -47,11 +49,11 @@ exports.postSignup = [
 		),
 	body('email')
 		.trim()
+		.toLowerCase()
 		.notEmpty()
 		.withMessage('Email is required.')
 		.isEmail()
-		.withMessage('Please enter a valid email address.')
-		.normalizeEmail(),
+		.withMessage('Please enter a valid email address.'),
 	body('password')
 		.notEmpty()
 		.withMessage('Password is required.')
@@ -121,11 +123,11 @@ exports.postSignup = [
 exports.postLogin = [
 	body('email')
 		.trim()
+		.toLowerCase()
 		.notEmpty()
 		.withMessage('Email is required.')
 		.isEmail()
-		.withMessage('Please enter a valid email address.')
-		.normalizeEmail(),
+		.withMessage('Please enter a valid email address.'),
 	body('password').notEmpty().withMessage('Password is required.'),
 
 	async (req, res, next) => {
@@ -176,10 +178,6 @@ exports.postLogin = [
 
 			req.session.user = {
 				_id: user._id.toString(),
-				email: user.email,
-				first_name: user.first_name,
-				last_name: user.last_name,
-				user_type: user.user_type,
 			};
 
 			await new Promise((resolve, reject) => {

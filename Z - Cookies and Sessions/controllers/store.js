@@ -1,5 +1,5 @@
 const Home = require('../models/home');
-const Favourite = require('../models/favourite');
+const User = require('../models/user');
 
 exports.getIndex = async (req, res, next) => {
 	try {
@@ -12,6 +12,7 @@ exports.getIndex = async (req, res, next) => {
 			pageTitle: 'airbnb',
 			currentPage: 'index',
 			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
 		});
 	} catch (error) {
 		next(error);
@@ -26,6 +27,7 @@ exports.getHomes = async (req, res, next) => {
 			pageTitle: 'homes list',
 			currentPage: 'homes',
 			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -37,19 +39,21 @@ exports.getBookings = (req, res, next) => {
 		pageTitle: 'my bookings',
 		currentPage: 'bookings',
 		isLoggedIn: req.session.isLoggedIn,
+		user: req.session.user,
 	});
 };
 
 exports.getFavouriteList = async (req, res, next) => {
 	try {
-		const favourites = await Favourite.find().populate('home_id');
-		const favouriteHomes = favourites.map(favourite => favourite.home_id);
+		const userId = req.session.user._id;
+		const user = await User.findById(userId).populate('favourites');
 
 		res.render('store/favourite-list', {
-			homes: favouriteHomes,
+			homes: user.favourites,
 			pageTitle: 'my favourites',
 			currentPage: 'favourites',
 			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -72,6 +76,7 @@ exports.getHomeDetails = async (req, res, next) => {
 			pageTitle: `home detail ${homeId}`,
 			currentPage: 'homes',
 			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -80,24 +85,34 @@ exports.getHomeDetails = async (req, res, next) => {
 
 exports.postAddToFavourite = async (req, res, next) => {
 	try {
-		await Favourite.create({ home_id: req.body.homeId });
-	} catch (err) {
-		if (err.code !== 11000) {
-			return next(err);
+		const homeId = req.body.homeId;
+		const userId = req.session.user._id;
+
+		const updated = await User.findByIdAndUpdate(userId, {
+			$addToSet: { favourites: homeId }, // $addToSet automatically ignores duplicates
+		});
+
+		if (!updated) {
+			console.log('user not found!');
 		}
-		console.error('given home is already added to favourites');
+
+		res.redirect('/favourites');
+	} catch (err) {
+		next(err);
 	}
-	res.redirect('/favourites');
 };
 
 exports.postRemoveFromFavourite = async (req, res, next) => {
 	try {
-		const deleted = await Favourite.findOneAndDelete({
-			home_id: req.params.homeId,
+		const homeId = req.body.homeId;
+		const userId = req.session.user._id;
+
+		const deleted = await User.findByIdAndUpdate(userId, {
+			$pull: { favourites: homeId },
 		});
 
 		if (!deleted) {
-			console.log('home not found in postRemoveFromFavourite()');
+			console.log('user not found!');
 		}
 
 		res.redirect('/favourites');
