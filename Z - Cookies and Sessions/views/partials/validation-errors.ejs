@@ -1,0 +1,7 @@
+<% if ((validationErrors || []).length) { %>
+  <ul class="mb-5 rounded-xl border border-[#e51414]/40 bg-[#e51414]/10 px-4 py-3 text-sm text-[#ff8a8a] list-disc list-inside space-y-1">
+    <% validationErrors.forEach(err => { %>
+      <li><%= err.msg %></li>
+    <% }) %>
+  </ul>
+<% } %>

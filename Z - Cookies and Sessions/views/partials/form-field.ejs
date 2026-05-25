@@ -1,0 +1,18 @@
+<div class="flex flex-col gap-1.5">
+  <label for="<%= id %>" class="text-sm text-gray-400 font-medium"><%= label %></label>
+  <input
+    type="<%= typeof type !== 'undefined' ? type : 'text' %>"
+    id="<%= id %>"
+    name="<%= name %>"
+    placeholder="<%= typeof placeholder !== 'undefined' ? placeholder : '' %>"
+    value="<%= typeof value !== 'undefined' ? value : '' %>"
+    class="<%= inputClass %>"
+    <% if (typeof autocomplete !== 'undefined') { %>autocomplete="<%= autocomplete %>"<% } %>
+    <% if (typeof required !== 'undefined' && required) { %>required<% } %>
+  />
+  <% if (typeof errorMsg !== 'undefined' && errorMsg) { %>
+    <p class="text-xs text-[#ff8a8a]"><%= errorMsg %></p>
+  <% } else if (typeof hint !== 'undefined' && hint) { %>
+    <p class="text-xs text-gray-500"><%= hint %></p>
+  <% } %>
+</div>

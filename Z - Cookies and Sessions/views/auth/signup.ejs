@@ -15,71 +15,71 @@
   </h2>
   <p class="text-gray-500 text-sm text-center mb-8">Create your account and start exploring</p>
 
-  <% if (errors.length) { %>
-    <ul class="mb-5 rounded-xl border border-[#e51414]/40 bg-[#e51414]/10 px-4 py-3 text-sm text-[#ff8a8a] list-disc list-inside space-y-1">
-      <% errors.forEach(err => { %>
-        <li><%= err.msg %></li>
-      <% }) %>
-    </ul>
-  <% } %>
+  <%- include('../partials/validation-errors') %>
 
   <form action="/signup" method="POST" class="bg-[#1a1a1f] rounded-2xl p-8 flex flex-col gap-5 shadow-xl border border-[#2a2a2f]/50">
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1.5">
-        <label for="firstName" class="text-sm text-gray-400 font-medium">First Name</label>
-        <input type="text" id="firstName" name="firstName" placeholder="John"
-          value="<%= input.firstName || '' %>"
-          class="<%= inputClass('firstName') %>"
-          autocomplete="given-name" required />
-        <% if (fieldError('firstName')) { %>
-          <p class="text-xs text-[#ff8a8a]"><%= fieldError('firstName') %></p>
-        <% } %>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label for="lastName" class="text-sm text-gray-400 font-medium">Last Name</label>
-        <input type="text" id="lastName" name="lastName" placeholder="Doe"
-          value="<%= input.lastName || '' %>"
-          class="<%= inputClass('lastName') %>"
-          autocomplete="family-name" />
-        <% if (fieldError('lastName')) { %>
-          <p class="text-xs text-[#ff8a8a]"><%= fieldError('lastName') %></p>
-        <% } %>
-      </div>
+      <%- include('../partials/form-field', {
+        id: 'firstName',
+        name: 'firstName',
+        label: 'First Name',
+        placeholder: 'John',
+        value: input.firstName || '',
+        inputClass: inputClass('firstName'),
+        errorMsg: fieldError('firstName'),
+        autocomplete: 'given-name',
+        required: true
+      }) %>
+      <%- include('../partials/form-field', {
+        id: 'lastName',
+        name: 'lastName',
+        label: 'Last Name',
+        placeholder: 'Doe',
+        value: input.lastName || '',
+        inputClass: inputClass('lastName'),
+        errorMsg: fieldError('lastName'),
+        autocomplete: 'family-name'
+      }) %>
     </div>
 
-    <div class="flex flex-col gap-1.5">
-      <label for="email" class="text-sm text-gray-400 font-medium">Email</label>
-      <input type="email" id="email" name="email" placeholder="you@example.com"
-        value="<%= input.email || '' %>"
-        class="<%= inputClass('email') %>"
-        autocomplete="email" required />
-      <% if (fieldError('email')) { %>
-        <p class="text-xs text-[#ff8a8a]"><%= fieldError('email') %></p>
-      <% } %>
-    </div>
+    <%- include('../partials/form-field', {
+      id: 'email',
+      name: 'email',
+      label: 'Email',
+      type: 'email',
+      placeholder: 'you@example.com',
+      value: input.email || '',
+      inputClass: inputClass('email'),
+      errorMsg: fieldError('email'),
+      autocomplete: 'email',
+      required: true
+    }) %>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1.5">
-        <label for="password" class="text-sm text-gray-400 font-medium">Password</label>
-        <input type="password" id="password" name="password" placeholder="••••••••"
-          class="<%= inputClass('password') %>"
-          autocomplete="new-password" required />
-        <% if (fieldError('password')) { %>
-          <p class="text-xs text-[#ff8a8a]"><%= fieldError('password') %></p>
-        <% } else { %>
-          <p class="text-xs text-gray-500">Min 8 chars, with uppercase, lowercase, and a special character.</p>
-        <% } %>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label for="confirmPassword" class="text-sm text-gray-400 font-medium">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••"
-          class="<%= inputClass('confirmPassword') %>"
-          autocomplete="new-password" required />
-        <% if (fieldError('confirmPassword')) { %>
-          <p class="text-xs text-[#ff8a8a]"><%= fieldError('confirmPassword') %></p>
-        <% } %>
-      </div>
+      <%- include('../partials/form-field', {
+        id: 'password',
+        name: 'password',
+        label: 'Password',
+        type: 'password',
+        placeholder: '••••••••',
+        inputClass: inputClass('password'),
+        errorMsg: fieldError('password'),
+        hint: fieldError('password') ? '' : 'Min 8 chars, with uppercase, lowercase, and a special character.',
+        autocomplete: 'new-password',
+        required: true
+      }) %>
+      <%- include('../partials/form-field', {
+        id: 'confirmPassword',
+        name: 'confirmPassword',
+        label: 'Confirm Password',
+        type: 'password',
+        placeholder: '••••••••',
+        inputClass: inputClass('confirmPassword'),
+        errorMsg: fieldError('confirmPassword'),
+        autocomplete: 'new-password',
+        required: true
+      }) %>
     </div>
 
     <div class="flex flex-col gap-2">

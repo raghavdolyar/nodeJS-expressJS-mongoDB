@@ -10,6 +10,8 @@ exports.getLogin = (req, res, next) => {
 		pageTitle: 'login',
 		currentPage: 'login',
 		isLoggedIn: req.session.isLoggedIn,
+		oldInput: {},
+		validationErrors: [],
 	});
 };
 
@@ -116,10 +118,81 @@ exports.postSignup = [
 	},
 ];
 
-exports.postLogin = (req, res, next) => {
-	req.session.isLoggedIn = true;
-	res.redirect('/');
-};
+exports.postLogin = [
+	body('email')
+		.trim()
+		.notEmpty()
+		.withMessage('Email is required.')
+		.isEmail()
+		.withMessage('Please enter a valid email address.')
+		.normalizeEmail(),
+	body('password').notEmpty().withMessage('Password is required.'),
+
+	async (req, res, next) => {
+		const { email, password } = req.body;
+		const errors = validationResult(req);
+		const oldInput = { email };
+
+		if (!errors.isEmpty()) {
+			return res.status(422).render('auth/login', {
+				pageTitle: 'login',
+				currentPage: 'login',
+				isLoggedIn: req.session.isLoggedIn,
+				oldInput,
+				validationErrors: errors.array(),
+			});
+		}
+
+		try {
+			const user = await User.findOne({ email });
+			const invalidLogin = {
+				path: 'email',
+				msg: 'Invalid email or password.',
+			};
+
+			if (!user) {
+				return res.status(422).render('auth/login', {
+					pageTitle: 'login',
+					currentPage: 'login',
+					isLoggedIn: req.session.isLoggedIn,
+					oldInput,
+					validationErrors: [invalidLogin],
+				});
+			}
+
+			const passwordMatch = await bcrypt.compare(password, user.password);
+
+			if (!passwordMatch) {
+				return res.status(422).render('auth/login', {
+					pageTitle: 'login',
+					currentPage: 'login',
+					isLoggedIn: req.session.isLoggedIn,
+					oldInput,
+					validationErrors: [invalidLogin],
+				});
+			}
+
+			req.session.isLoggedIn = true;
+
+			req.session.user = {
+				_id: user._id.toString(),
+				email: user.email,
+				first_name: user.first_name,
+				last_name: user.last_name,
+				user_type: user.user_type,
+			};
+
+			await new Promise((resolve, reject) => {
+				req.session.save(err => (err ? reject(err) : resolve()));
+			});
+
+			return res.redirect('/');
+		} catch (err) {
+			console.error(err);
+			next(err);
+		}
+	},
+];
 
 exports.postLogout = async (req, res, next) => {
 	try {
