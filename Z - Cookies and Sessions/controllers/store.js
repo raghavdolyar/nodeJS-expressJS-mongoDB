@@ -7,11 +7,13 @@ exports.getIndex = async (req, res, next) => {
 		const homes = regHomes.slice(0, 4);
 		homes.sort((a, b) => b.rating - a.rating);
 
+		console.log(req.session);
+
 		res.render('store/index', {
 			homes: homes,
 			pageTitle: 'airbnb',
 			currentPage: 'index',
-			isLoggedIn: req.isLoggedIn,
+			isLoggedIn: req.session.isLoggedIn,
 		});
 	} catch (error) {
 		next(error);
@@ -25,7 +27,7 @@ exports.getHomes = async (req, res, next) => {
 			homes: regHomes,
 			pageTitle: 'homes list',
 			currentPage: 'homes',
-			isLoggedIn: req.isLoggedIn,
+			isLoggedIn: req.session.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);
@@ -36,7 +38,7 @@ exports.getBookings = (req, res, next) => {
 	res.render('store/bookings', {
 		pageTitle: 'my bookings',
 		currentPage: 'bookings',
-		isLoggedIn: req.isLoggedIn,
+		isLoggedIn: req.session.isLoggedIn,
 	});
 };
 
@@ -49,7 +51,7 @@ exports.getFavouriteList = async (req, res, next) => {
 			homes: favouriteHomes,
 			pageTitle: 'my favourites',
 			currentPage: 'favourites',
-			isLoggedIn: req.isLoggedIn,
+			isLoggedIn: req.session.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);
@@ -71,7 +73,7 @@ exports.getHomeDetails = async (req, res, next) => {
 			homeId: homeId,
 			pageTitle: `home detail ${homeId}`,
 			currentPage: 'homes',
-			isLoggedIn: req.isLoggedIn,
+			isLoggedIn: req.session.isLoggedIn,
 		});
 	} catch (err) {
 		next(err);

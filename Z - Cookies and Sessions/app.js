@@ -3,6 +3,13 @@ const path = require('path');
 
 // external modules
 const express = require('express');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+// database things
+const { default: mongoose } = require('mongoose');
+require('dotenv').config();
+const DB_PATH = process.env.MONGO_URL;
 
 // local modules
 const { authRouter } = require('./routes/authRouter');
@@ -12,9 +19,6 @@ const { errorRouter } = require('./routes/errorRouter');
 const { globalErrorHandler } = require('./controllers/errors');
 const rootDir = require('./utils/path-util');
 
-const { default: mongoose } = require('mongoose');
-require('dotenv').config();
-
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -23,18 +27,24 @@ app.set('views', 'views');
 // granting access to public folder
 app.use(express.static(path.join(rootDir, 'public')));
 
+const store = new MongoDBStore({ uri: DB_PATH, collection: 'sessions' });
+
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-	req.isLoggedIn = req.get('Cookie')?.split('=')[1] || false;
-	next();
-});
+app.use(
+	session({
+		secret: 'airbnb secret',
+		resave: false,
+		saveUninitialized: true,
+		store: store,
+	}),
+);
 
 app.use(authRouter);
 app.use(storeRouter);
 
 app.use('/host', (req, res, next) => {
-	if (!req.isLoggedIn) {
+	if (!req.session.isLoggedIn) {
 		return res.redirect('/login');
 	}
 	next();
@@ -45,7 +55,6 @@ app.use(errorRouter);
 app.use(globalErrorHandler);
 
 const PORT = 3000;
-const DB_PATH = process.env.MONGO_URL;
 
 (async () => {
 	try {

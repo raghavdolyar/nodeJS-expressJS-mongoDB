@@ -2,16 +2,29 @@ exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
 		pageTitle: 'login',
 		currentPage: 'login',
-		isLoggedIn: false,
+		isLoggedIn: req.session.isLoggedIn,
 	});
 };
 
 exports.postLogin = (req, res, next) => {
-	res.cookie('isLoggedIn', true, {
-		maxAge: 1000 * 60 * 60 * 24 * 30,
-		httpOnly: true,
-		secure: process.env.NODE_ENV === 'production',
-		sameSite: 'strict',
-	});
+	req.session.isLoggedIn = true;
 	res.redirect('/');
+};
+
+exports.postLogout = async (req, res, next) => {
+	try {
+		await new Promise((resolve, reject) => {
+			req.session.destroy(err => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+		res.clearCookie('connect.sid');
+		res.redirect('/');
+	} catch (err) {
+		next(err);
+	}
 };

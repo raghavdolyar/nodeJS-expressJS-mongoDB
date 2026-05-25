@@ -25,8 +25,15 @@
       Add Home
     </a>
   <% } %>
-  <a href="/login" class="ml-auto px-4 py-1.5 rounded-md text-sm font-medium text-white hover:bg-[#c10d0d] transition-colors
-  <%= currentPage === 'login' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
-    Log In
-  </a>
+  <% if (!isLoggedIn) { %>
+    <a href="/login" class="ml-auto px-4 py-1.5 rounded-md text-sm font-medium text-white hover:bg-[#c10d0d] transition-colors <%= currentPage === 'login' ? 'bg-[#111114] text-[#e51414]' : 'text-white hover:bg-[#c10d0d]' %>">
+      Log In
+    </a>
+  <% } else { %>
+    <form action="/logout" method="POST" class="ml-auto">
+      <button type="submit" class="px-4 py-1.5 rounded-md text-sm font-medium text-white hover:bg-[#c10d0d] transition-colors">
+        Log Out
+      </button>
+    </form>
+  <% } %>
 </nav>
