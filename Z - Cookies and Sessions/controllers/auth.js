@@ -11,10 +11,8 @@ exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
 		pageTitle: 'login',
 		currentPage: 'login',
-		isLoggedIn: req.session.isLoggedIn,
 		oldInput: {},
 		validationErrors: [],
-		user: {},
 	});
 };
 
@@ -22,10 +20,8 @@ exports.getSignup = (req, res, next) => {
 	res.render('auth/signup', {
 		pageTitle: 'signup',
 		currentPage: 'signup',
-		isLoggedIn: req.session.isLoggedIn,
 		oldInput: {},
 		validationErrors: [],
-		user: {},
 	});
 };
 
@@ -99,10 +95,8 @@ exports.postSignup = [
 			return res.status(422).render('auth/signup', {
 				pageTitle: 'signup',
 				currentPage: 'signup',
-				isLoggedIn: req.session.isLoggedIn,
 				oldInput,
 				validationErrors: errors.array(),
-				user: {},
 			});
 		}
 
@@ -153,10 +147,8 @@ exports.postLogin = [
 			return res.status(422).render('auth/login', {
 				pageTitle: 'login',
 				currentPage: 'login',
-				isLoggedIn: req.session.isLoggedIn,
 				oldInput,
 				validationErrors: errors.array(),
-				user: {},
 			});
 		}
 
@@ -176,10 +168,8 @@ exports.postLogin = [
 				return res.status(422).render('auth/login', {
 					pageTitle: 'login',
 					currentPage: 'login',
-					isLoggedIn: req.session.isLoggedIn,
 					oldInput,
 					validationErrors: [invalidLogin],
-					user: {},
 				});
 			}
 
@@ -189,10 +179,8 @@ exports.postLogin = [
 				return res.status(422).render('auth/login', {
 					pageTitle: 'login',
 					currentPage: 'login',
-					isLoggedIn: req.session.isLoggedIn,
 					oldInput,
 					validationErrors: [invalidLogin],
-					user: {},
 				});
 			}
 
@@ -201,6 +189,8 @@ exports.postLogin = [
 			req.session.user = {
 				_id: user._id.toString(),
 				user_type, // 'guest' or 'host'
+				first_name: user.first_name,
+				last_name: user.last_name,
 			};
 
 			await new Promise((resolve, reject) => {

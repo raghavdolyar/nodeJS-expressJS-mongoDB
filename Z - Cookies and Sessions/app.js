@@ -73,6 +73,12 @@ app.use(
 	}),
 );
 
+app.use((req, res, next) => {
+	res.locals.isLoggedIn = req.session.isLoggedIn || false;
+	res.locals.user = req.session.user || {};
+	next();
+});
+
 app.use(authRouter);
 
 app.use(storeRouter);

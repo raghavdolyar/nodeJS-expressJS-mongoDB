@@ -7,14 +7,12 @@ exports.getIndex = async (req, res, next) => {
 	try {
 		const regHomes = await Home.find();
 		regHomes.sort((a, b) => b.rating - a.rating);
-		const homes = regHomes.slice(0, 4);
+		const homes = regHomes.slice(0, 6);
 
 		res.render('store/index', {
 			homes,
 			pageTitle: 'airbnb',
 			currentPage: 'index',
-			isLoggedIn: req.session.isLoggedIn,
-			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -29,8 +27,6 @@ exports.getHomes = async (req, res, next) => {
 			homes: regHomes,
 			pageTitle: 'homes list',
 			currentPage: 'homes',
-			isLoggedIn: req.session.isLoggedIn,
-			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -50,8 +46,6 @@ exports.getBookings = async (req, res, next) => {
 			bookings,
 			pageTitle: 'my bookings',
 			currentPage: 'bookings',
-			isLoggedIn: req.session.isLoggedIn,
-			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -67,8 +61,6 @@ exports.getFavouriteList = async (req, res, next) => {
 			homes: guest.favourites,
 			pageTitle: 'my favourites',
 			currentPage: 'favourites',
-			isLoggedIn: req.session.isLoggedIn,
-			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -90,8 +82,6 @@ exports.getHomeDetails = async (req, res, next) => {
 			homeId,
 			pageTitle: `home detail ${homeId}`,
 			currentPage: 'homes',
-			isLoggedIn: req.session.isLoggedIn,
-			user: req.session.user,
 		});
 	} catch (err) {
 		next(err);
@@ -155,8 +145,6 @@ exports.getBookHome = async (req, res, next) => {
 			homeId,
 			pageTitle: `Book ${home.name}`,
 			currentPage: 'homes',
-			isLoggedIn: req.session.isLoggedIn,
-			user: req.session.user,
 			oldInput: {},
 			validationErrors: [],
 		});
@@ -201,8 +189,6 @@ exports.postBookHome = async (req, res, next) => {
 				homeId,
 				pageTitle: `Book ${home.name}`,
 				currentPage: 'homes',
-				isLoggedIn: req.session.isLoggedIn,
-				user: req.session.user,
 				oldInput: { checkIn, checkOut, totalPrice },
 				validationErrors: errors,
 			});
@@ -226,6 +212,18 @@ exports.postBookHome = async (req, res, next) => {
 			status: 'pending',
 		});
 
+		res.redirect('/bookings');
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.postDeleteBooking = async (req, res, next) => {
+	try {
+		const bookingId = req.params.bookingId;
+		const guestId = req.session.user._id;
+
+		await Booking.findOneAndDelete({ _id: bookingId, guest_id: guestId });
 		res.redirect('/bookings');
 	} catch (err) {
 		next(err);

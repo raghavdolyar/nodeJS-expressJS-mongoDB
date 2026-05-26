@@ -51,6 +51,12 @@ router.post(
 	requireGuest,
 	storeController.postBookHome,
 );
+router.post(
+	'/bookings/delete/:bookingId',
+	requireLogin,
+	requireGuest,
+	storeController.postDeleteBooking,
+);
 
 module.exports = {
 	storeRouter: router,
