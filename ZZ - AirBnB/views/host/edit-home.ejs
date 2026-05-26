@@ -48,8 +48,12 @@
           </button>
         </div>
 
+        <% if (editing) { %>
+        <p class="text-xs text-gray-400 dark:text-gray-500">Leave empty to keep the current photo.</p>
+        <% } %>
+
         <div id="photo-url-wrapper">
-          <input type="url" name="photoUrl" id="photo-url" class="w-full bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="https://example.com/photo.jpg" value="<%= editing ? home.photo_url : '' %>" />
+          <input type="url" name="photoUrl" id="photo-url" class="w-full bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="https://example.com/photo.jpg" />
         </div>
 
         <div id="photo-file-wrapper" class="hidden">

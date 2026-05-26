@@ -17,6 +17,7 @@ const DB_PATH = process.env.MONGO_URL;
 const { authRouter } = require('./routes/auth');
 const { storeRouter } = require('./routes/store');
 const { hostRouter } = require('./routes/host');
+const { rulesRouter } = require('./routes/rules');
 const { errorRouter } = require('./routes/error');
 const { globalErrorHandler } = require('./controllers/error');
 const rootDir = require('./utils/path-util');
@@ -80,7 +81,7 @@ app.set('views', 'views');
 app.use(express.static(path.join(rootDir, 'public'))); // granting access to public folder
 app.use(express.urlencoded({ extended: true }));
 
-fs.mkdirSync(path.join(rootDir, 'public', 'uploads'), { recursive: true }); // ensure uploads directory exists before multer writes to it
+fs.mkdirSync(path.join(rootDir, 'public', 'uploads'), { recursive: true }); // ensure uploads directory exists
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -104,6 +105,7 @@ app.use(multer({ storage, fileFilter }).single('photoFile')); // since field nam
 app.use(authRouter);
 app.use(storeRouter);
 app.use('/host', hostRouter);
+app.use(rulesRouter);
 
 app.use(errorRouter);
 app.use(globalErrorHandler);
