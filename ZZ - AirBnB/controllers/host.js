@@ -59,15 +59,16 @@ exports.postAddHome = async (req, res, next) => {
 			return res.redirect('/');
 		}
 
-		const photo =
-			req.body.photoUrl || (req.file ? `/uploads/${req.file.filename}` : '');
+		const photo = req.file
+			? `/uploads/${req.file.filename}`
+			: req.body.photoUrl?.trim() || '';
 
 		await Home.create({
 			name: housename.trim(),
 			location: location.trim(),
 			price_per_night: parseFloat(price.trim()),
 			rating: parseFloat(rating.trim()),
-			photo_url: photo.trim(),
+			photo_url: photo,
 			description: description.trim(),
 			host_id: hostId,
 		});
@@ -80,11 +81,19 @@ exports.postAddHome = async (req, res, next) => {
 
 exports.postEditHome = async (req, res, next) => {
 	try {
-		const { id, housename, location, price, rating, photoUrl, description } =
-			req.body;
+		const { id, housename, location, price, rating, description } = req.body;
 		const hostId = req.session.user._id;
 
-		// Only update if the home actually belongs to this host
+		// only include photo_url in the update if a new one was provided
+		const photoUpdate = {};
+
+		if (req.file) {
+			photoUpdate.photo_url = `/uploads/${req.file.filename}`;
+		} else if (req.body.photoUrl && req.body.photoUrl.trim()) {
+			photoUpdate.photo_url = req.body.photoUrl.trim();
+		}
+
+		// only update if the home actually belongs to this host
 		const updated = await Home.findOneAndUpdate(
 			{ _id: id, host_id: hostId },
 			{
@@ -92,8 +101,8 @@ exports.postEditHome = async (req, res, next) => {
 				location: location.trim(),
 				price_per_night: parseFloat(price.trim()),
 				rating: parseFloat(rating.trim()),
-				photo_url: photoUrl.trim(),
 				description: description.trim(),
+				...photoUpdate,
 			},
 		);
 
