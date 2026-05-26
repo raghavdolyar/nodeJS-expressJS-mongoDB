@@ -146,4 +146,4 @@ vite.config.ts.timestamp-*
 *.txt
 
 # DataBase
-**/database/
+**/data/
