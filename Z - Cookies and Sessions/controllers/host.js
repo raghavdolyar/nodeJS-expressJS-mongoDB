@@ -14,10 +14,14 @@ exports.getEditHome = async (req, res, next) => {
 	try {
 		const homeId = req.params.homeId;
 		const editing = req.query.editing === 'true';
-		const house = await Home.findById(homeId);
+		const hostId = req.session.user._id;
+
+		const house = await Home.findOne({ _id: homeId, host_id: hostId });
 
 		if (!house) {
-			console.log('home not found in getEditHome()');
+			console.log(
+				'home not found or does not belong to this host in getEditHome()',
+			);
 			return res.redirect('/host/home-list');
 		}
 
@@ -25,7 +29,7 @@ exports.getEditHome = async (req, res, next) => {
 			home: house,
 			pageTitle: 'edit home',
 			currentPage: 'host-homes',
-			editing: editing,
+			editing,
 			isLoggedIn: req.session.isLoggedIn,
 			user: req.session.user,
 		});
@@ -36,7 +40,9 @@ exports.getEditHome = async (req, res, next) => {
 
 exports.getHostHomes = async (req, res, next) => {
 	try {
-		const regHomes = await Home.find();
+		const hostId = req.session.user._id;
+		const regHomes = await Home.find({ host_id: hostId });
+
 		res.render('host/host-home-list', {
 			homes: regHomes,
 			pageTitle: 'host homes',
@@ -53,6 +59,7 @@ exports.postAddHome = async (req, res, next) => {
 	try {
 		const { housename, location, price, rating, photoUrl, description } =
 			req.body;
+		const hostId = req.session.user._id;
 
 		await Home.create({
 			name: housename.trim(),
@@ -61,6 +68,7 @@ exports.postAddHome = async (req, res, next) => {
 			rating: parseFloat(rating.trim()),
 			photo_url: photoUrl.trim(),
 			description: description.trim(),
+			host_id: hostId,
 		});
 
 		res.redirect('/host/home-list');
@@ -73,18 +81,25 @@ exports.postEditHome = async (req, res, next) => {
 	try {
 		const { id, housename, location, price, rating, photoUrl, description } =
 			req.body;
+		const hostId = req.session.user._id;
 
-		const updated = await Home.findByIdAndUpdate(id, {
-			name: housename.trim(),
-			location: location.trim(),
-			price_per_night: parseFloat(price.trim()),
-			rating: parseFloat(rating.trim()),
-			photo_url: photoUrl.trim(),
-			description: description.trim(),
-		});
+		// Only update if the home actually belongs to this host
+		const updated = await Home.findOneAndUpdate(
+			{ _id: id, host_id: hostId },
+			{
+				name: housename.trim(),
+				location: location.trim(),
+				price_per_night: parseFloat(price.trim()),
+				rating: parseFloat(rating.trim()),
+				photo_url: photoUrl.trim(),
+				description: description.trim(),
+			},
+		);
 
 		if (!updated) {
-			console.log('home not found in postEditHome()');
+			console.log(
+				'home not found or does not belong to this host in postEditHome()',
+			);
 		}
 
 		res.redirect('/host/home-list');
@@ -95,10 +110,18 @@ exports.postEditHome = async (req, res, next) => {
 
 exports.postDeleteHome = async (req, res, next) => {
 	try {
-		const deleted = await Home.findByIdAndDelete(req.params.homeId);
+		const hostId = req.session.user._id;
+
+		// Only delete if the home belongs to this host
+		const deleted = await Home.findOneAndDelete({
+			_id: req.params.homeId,
+			host_id: hostId,
+		});
 
 		if (!deleted) {
-			console.log('home not found in postDeleteHome()');
+			console.log(
+				'home not found or does not belong to this host in postDeleteHome()',
+			);
 		}
 
 		res.redirect('/host/home-list');

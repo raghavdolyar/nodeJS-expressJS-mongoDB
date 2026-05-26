@@ -1,17 +1,16 @@
 <%- include('../partials/head') %>
 
+<div class="w-full max-w-sm mb-5">
 <header class="mb-8 text-center">
-  <h2 class="text-3xl font-semibold text-gray-900 dark:text-white tracking-tight">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
     <%= editing ? 'Edit your' : 'Register your' %>
     <span class="text-[#D6001C]">Home</span>
   </h2>
-  <p class="mt-2 text-sm text-gray-400 dark:text-gray-500"><%= editing ? 'Update your listing details below.' : 'Fill in the details to add a new listing.' %></p>
+  <p class="text-gray-400 dark:text-gray-500 text-sm"><%= editing ? 'Update your listing details below.' : 'Fill in the details to add a new listing.' %></p>
 </header>
 
 <main>
-  <form action="/host/<%= editing ? 'edit-home' : 'add-home' %>" method="POST"
-    class="flex flex-col gap-4 w-full max-w-sm bg-white dark:bg-[#1a1a1f] border border-gray-100 dark:border-white/6 rounded-2xl p-8 shadow-sm dark:shadow-lg"
-    autocomplete="off">
+  <form action="/host/<%= editing ? 'edit-home' : 'add-home' %>" method="POST" class="flex flex-col gap-4 w-full bg-white dark:bg-[#1a1a1f] border border-gray-100 dark:border-white/6 rounded-2xl p-8 shadow-sm dark:shadow-lg" autocomplete="off">
 
     <% if (editing) { %>
     <input type="hidden" name="id" value="<%= home._id %>">
@@ -19,50 +18,32 @@
 
     <div class="flex flex-col gap-1.5">
       <label for="housename" class="text-sm text-gray-600 dark:text-gray-400 font-medium">House Name</label>
-      <input type="text" name="housename" id="housename" required
-        class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600"
-        placeholder="e.g. Cozy Mountain Cabin"
-        value="<%= editing ? home.name : '' %>" />
+      <input type="text" name="housename" id="housename" required class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="e.g. Cozy Mountain Cabin" value="<%= editing ? home.name : '' %>" />
     </div>
 
     <div class="flex flex-col gap-1.5">
       <label for="location" class="text-sm text-gray-600 dark:text-gray-400 font-medium">Location</label>
-      <input type="text" name="location" id="location" required
-        class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600"
-        placeholder="e.g. Manali, Himachal Pradesh"
-        value="<%= editing ? home.location : '' %>" />
+      <input type="text" name="location" id="location" required class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="e.g. Manali, Himachal Pradesh" value="<%= editing ? home.location : '' %>" />
     </div>
 
     <div class="flex flex-col gap-1.5">
       <label for="price" class="text-sm text-gray-600 dark:text-gray-400 font-medium">Price per Night ($)</label>
-      <input type="number" name="price" id="price" min="0" step="0.01" required
-        class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600"
-        placeholder="e.g. 65.29"
-        value="<%= editing ? home.price_per_night : '' %>" />
+      <input type="number" name="price" id="price" min="0" step="0.01" required class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="e.g. 65.29" value="<%= editing ? home.price_per_night : '' %>" />
     </div>
 
     <div class="flex flex-col gap-1.5">
       <label for="rating" class="text-sm text-gray-600 dark:text-gray-400 font-medium">Rating (1 – 5)</label>
-      <input type="number" name="rating" id="rating" min="1" max="5" step="0.1" required
-        class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600"
-        placeholder="e.g. 4.5"
-        value="<%= editing ? home.rating : '' %>" />
+      <input type="number" name="rating" id="rating" min="1" max="5" step="0.1" required class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="e.g. 4.5" value="<%= editing ? home.rating : '' %>" />
     </div>
 
     <div class="flex flex-col gap-1.5">
       <label for="photoUrl" class="text-sm text-gray-600 dark:text-gray-400 font-medium">Photo URL</label>
-      <input type="url" name="photoUrl" id="photoUrl"
-        class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600"
-        placeholder="https://example.com/photo.jpg"
-        value="<%= editing ? home.photo_url : '' %>" />
+      <input type="url" name="photoUrl" id="photoUrl" class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="https://example.com/photo.jpg" value="<%= editing ? home.photo_url : '' %>" />
     </div>
 
     <div class="flex flex-col gap-1.5">
       <label for="description" class="text-sm text-gray-600 dark:text-gray-400 font-medium">Description</label>
-      <textarea name="description" id="description"
-        class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600 resize-none"
-        placeholder="Charming boutique room with pool, balcony, and fast Wi-Fi."
-        style="height: 120px;"><%= editing ? home.description : '' %></textarea>
+      <textarea name="description" id="description" class="bg-gray-50 dark:bg-[#111114] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg px-4 py-2.5 outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600" placeholder="Charming boutique room with pool, balcony, and fast Wi-Fi." style="height: 120px;"><%= editing ? home.description : '' %></textarea>
     </div>
 
     <button type="submit" class="mt-2 px-5 py-2.5 bg-[#D6001C] hover:bg-[#b8001a] active:scale-[0.98] text-white text-sm font-semibold rounded-lg transition-all shadow-sm">
@@ -71,6 +52,7 @@
 
   </form>
 </main>
+</div>
 
 </div>
 </body>

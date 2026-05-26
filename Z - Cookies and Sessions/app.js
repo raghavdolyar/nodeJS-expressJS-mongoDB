@@ -64,28 +64,19 @@ app.use(
 	session({
 		secret: 'airbnb secret',
 		resave: false,
-		saveUninitialized: true,
+		saveUninitialized: false,
 		store: store,
+		cookie: {
+			httpOnly: true,
+			sameSite: 'lax',
+		},
 	}),
 );
 
 app.use(authRouter);
 
-app.use(['/favourites', '/bookings', '/homes/:homeId'], (req, res, next) => {
-	if (!req.session.isLoggedIn) return res.redirect('/login');
-	next();
-});
 app.use(storeRouter);
 
-app.use('/host', (req, res, next) => {
-	if (!req.session.isLoggedIn) {
-		return res.redirect('/login');
-	}
-	if (req.session.user?.user_type !== 'host') {
-		return res.redirect('/');
-	}
-	next();
-});
 app.use('/host', hostRouter);
 
 app.use(errorRouter);

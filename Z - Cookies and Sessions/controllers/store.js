@@ -1,5 +1,7 @@
 const Home = require('../models/home');
-const User = require('../models/user');
+const Guest = require('../models/guest');
+const Booking = require('../models/booking');
+const mongoose = require('mongoose');
 
 exports.getIndex = async (req, res, next) => {
 	try {
@@ -8,20 +10,21 @@ exports.getIndex = async (req, res, next) => {
 		const homes = regHomes.slice(0, 4);
 
 		res.render('store/index', {
-			homes: homes,
+			homes,
 			pageTitle: 'airbnb',
 			currentPage: 'index',
 			isLoggedIn: req.session.isLoggedIn,
 			user: req.session.user,
 		});
-	} catch (error) {
-		next(error);
+	} catch (err) {
+		next(err);
 	}
 };
 
 exports.getHomes = async (req, res, next) => {
 	try {
 		const regHomes = await Home.find();
+
 		res.render('store/user-home-list', {
 			homes: regHomes,
 			pageTitle: 'homes list',
@@ -34,22 +37,34 @@ exports.getHomes = async (req, res, next) => {
 	}
 };
 
-exports.getBookings = (req, res, next) => {
-	res.render('store/bookings', {
-		pageTitle: 'my bookings',
-		currentPage: 'bookings',
-		isLoggedIn: req.session.isLoggedIn,
-		user: req.session.user,
-	});
+exports.getBookings = async (req, res, next) => {
+	try {
+		const guestId = req.session.user._id;
+
+		// Populate home_id so the view has full home details
+		const bookings = await Booking.find({ guest_id: guestId }).populate(
+			'home_id',
+		);
+
+		res.render('store/bookings', {
+			bookings,
+			pageTitle: 'my bookings',
+			currentPage: 'bookings',
+			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
+		});
+	} catch (err) {
+		next(err);
+	}
 };
 
 exports.getFavouriteList = async (req, res, next) => {
 	try {
-		const userId = req.session.user._id;
-		const user = await User.findById(userId).populate('favourites');
+		const guestId = req.session.user._id;
+		const guest = await Guest.findById(guestId).populate('favourites');
 
 		res.render('store/favourite-list', {
-			homes: user.favourites,
+			homes: guest.favourites,
 			pageTitle: 'my favourites',
 			currentPage: 'favourites',
 			isLoggedIn: req.session.isLoggedIn,
@@ -72,7 +87,7 @@ exports.getHomeDetails = async (req, res, next) => {
 
 		res.render('store/home-detail', {
 			home: house,
-			homeId: homeId,
+			homeId,
 			pageTitle: `home detail ${homeId}`,
 			currentPage: 'homes',
 			isLoggedIn: req.session.isLoggedIn,
@@ -86,14 +101,18 @@ exports.getHomeDetails = async (req, res, next) => {
 exports.postAddToFavourite = async (req, res, next) => {
 	try {
 		const homeId = req.body.homeId;
-		const userId = req.session.user._id;
+		if (!mongoose.isValidObjectId(homeId)) {
+			console.log('invalid homeId in postAddToFavourite()');
+			return res.redirect('/homes');
+		}
+		const guestId = req.session.user._id;
 
-		const updated = await User.findByIdAndUpdate(userId, {
-			$addToSet: { favourites: homeId }, // $addToSet automatically ignores duplicates
+		const updated = await Guest.findByIdAndUpdate(guestId, {
+			$addToSet: { favourites: homeId },
 		});
 
 		if (!updated) {
-			console.log('user not found!');
+			console.log('guest not found in postAddToFavourite()');
 		}
 
 		res.redirect('/favourites');
@@ -105,17 +124,109 @@ exports.postAddToFavourite = async (req, res, next) => {
 exports.postRemoveFromFavourite = async (req, res, next) => {
 	try {
 		const homeId = req.params.homeId;
-		const userId = req.session.user._id;
+		const guestId = req.session.user._id;
 
-		const deleted = await User.findByIdAndUpdate(userId, {
+		const updated = await Guest.findByIdAndUpdate(guestId, {
 			$pull: { favourites: homeId },
 		});
 
-		if (!deleted) {
-			console.log('user not found!');
+		if (!updated) {
+			console.log('guest not found in postRemoveFromFavourite()');
 		}
 
 		res.redirect('/favourites');
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getBookHome = async (req, res, next) => {
+	try {
+		const homeId = req.params.homeId;
+		const home = await Home.findById(homeId);
+
+		if (!home) {
+			console.log('home not found in getBookHome()');
+			return res.redirect('/homes');
+		}
+
+		res.render('store/book-home', {
+			home,
+			homeId,
+			pageTitle: `Book ${home.name}`,
+			currentPage: 'homes',
+			isLoggedIn: req.session.isLoggedIn,
+			user: req.session.user,
+			oldInput: {},
+			validationErrors: [],
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.postBookHome = async (req, res, next) => {
+	try {
+		const homeId = req.params.homeId;
+		const guestId = req.session.user._id;
+		const { checkIn, checkOut, totalPrice } = req.body;
+
+		const errors = [];
+
+		const inDate = new Date(checkIn);
+		const outDate = new Date(checkOut);
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		if (!checkIn)
+			errors.push({ path: 'checkIn', msg: 'Check-in date is required.' });
+		else if (inDate < today)
+			errors.push({
+				path: 'checkIn',
+				msg: 'Check-in date cannot be in the past.',
+			});
+
+		if (!checkOut)
+			errors.push({ path: 'checkOut', msg: 'Check-out date is required.' });
+		else if (outDate <= inDate)
+			errors.push({
+				path: 'checkOut',
+				msg: 'Check-out must be after check-in.',
+			});
+
+		if (errors.length > 0) {
+			const home = await Home.findById(homeId);
+			return res.status(422).render('store/book-home', {
+				home,
+				homeId,
+				pageTitle: `Book ${home.name}`,
+				currentPage: 'homes',
+				isLoggedIn: req.session.isLoggedIn,
+				user: req.session.user,
+				oldInput: { checkIn, checkOut, totalPrice },
+				validationErrors: errors,
+			});
+		}
+
+		// ── Compute total price server-side (don't trust the client value) ──
+		const home = await Home.findById(homeId);
+		if (!home) {
+			console.log('home not found in postBookHome()');
+			return res.redirect('/homes');
+		}
+		const nights = Math.round((outDate - inDate) / (1000 * 60 * 60 * 24));
+		const total = parseFloat((nights * home.price_per_night).toFixed(2));
+
+		await Booking.create({
+			guest_id: guestId,
+			home_id: homeId,
+			check_in: inDate,
+			check_out: outDate,
+			total_price: total,
+			status: 'pending',
+		});
+
+		res.redirect('/bookings');
 	} catch (err) {
 		next(err);
 	}

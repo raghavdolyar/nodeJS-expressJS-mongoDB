@@ -1,9 +1,11 @@
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-const User = require('../models/user');
+const Guest = require('../models/guest');
+const Host = require('../models/host');
 
 const NAME_REGEX = /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+const PHONE_REGEX = /^[+]?[\d\s\-().]{7,20}$/;
 
 exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
@@ -75,20 +77,23 @@ exports.postSignup = [
 		.withMessage('Please select an account type.')
 		.isIn(['guest', 'host'])
 		.withMessage('Account type must be either guest or host.'),
+	// phone is only required when signing up as a host
+	body('phone')
+		.if(body('userType').equals('host'))
+		.trim()
+		.notEmpty()
+		.withMessage('Phone number is required for hosts.')
+		.matches(PHONE_REGEX)
+		.withMessage('Please enter a valid phone number.'),
 	body('terms')
 		.equals('accepted')
 		.withMessage('You must accept the terms and conditions.'),
-	// final handler middleware
+
 	async (req, res, next) => {
-		const { firstName, lastName, email, password, userType } = req.body;
+		const { firstName, lastName, email, password, userType, phone } = req.body;
 		const errors = validationResult(req);
 
-		const oldInput = {
-			firstName,
-			lastName,
-			email,
-			userType,
-		};
+		const oldInput = { firstName, lastName, email, userType, phone };
 
 		if (!errors.isEmpty()) {
 			return res.status(422).render('auth/signup', {
@@ -97,21 +102,30 @@ exports.postSignup = [
 				isLoggedIn: req.session.isLoggedIn,
 				oldInput,
 				validationErrors: errors.array(),
+				user: {},
 			});
 		}
 
 		try {
 			const hashedPassword = await bcrypt.hash(password, 12);
 
-			const user = new User({
-				first_name: firstName,
-				last_name: lastName || undefined,
-				email,
-				password: hashedPassword,
-				user_type: userType,
-			});
+			if (userType === 'host') {
+				await Host.create({
+					first_name: firstName,
+					last_name: lastName || '',
+					email,
+					password: hashedPassword,
+					phone: phone.trim(),
+				});
+			} else {
+				await Guest.create({
+					first_name: firstName,
+					last_name: lastName || '',
+					email,
+					password: hashedPassword,
+				});
+			}
 
-			await user.save();
 			return res.redirect('/login');
 		} catch (err) {
 			console.error(err);
@@ -142,15 +156,21 @@ exports.postLogin = [
 				isLoggedIn: req.session.isLoggedIn,
 				oldInput,
 				validationErrors: errors.array(),
+				user: {},
 			});
 		}
 
 		try {
-			const user = await User.findOne({ email });
-			const invalidLogin = {
-				path: 'email',
-				msg: 'Invalid email or password.',
-			};
+			const invalidLogin = { path: 'email', msg: 'Invalid email or password.' };
+
+			// search guests first, then hosts
+			let user = await Guest.findOne({ email });
+			let user_type = 'guest';
+
+			if (!user) {
+				user = await Host.findOne({ email });
+				user_type = 'host';
+			}
 
 			if (!user) {
 				return res.status(422).render('auth/login', {
@@ -159,6 +179,7 @@ exports.postLogin = [
 					isLoggedIn: req.session.isLoggedIn,
 					oldInput,
 					validationErrors: [invalidLogin],
+					user: {},
 				});
 			}
 
@@ -171,14 +192,15 @@ exports.postLogin = [
 					isLoggedIn: req.session.isLoggedIn,
 					oldInput,
 					validationErrors: [invalidLogin],
+					user: {},
 				});
 			}
 
 			req.session.isLoggedIn = true;
-
+			
 			req.session.user = {
 				_id: user._id.toString(),
-				user_type: user.user_type,
+				user_type, // 'guest' or 'host'
 			};
 
 			await new Promise((resolve, reject) => {
@@ -196,13 +218,7 @@ exports.postLogin = [
 exports.postLogout = async (req, res, next) => {
 	try {
 		await new Promise((resolve, reject) => {
-			req.session.destroy(err => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
+			req.session.destroy(err => (err ? reject(err) : resolve()));
 		});
 		res.clearCookie('connect.sid');
 		res.redirect('/');

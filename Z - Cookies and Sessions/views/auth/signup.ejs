@@ -86,8 +86,7 @@
       <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">I want to join as</span>
       <div class="grid grid-cols-2 gap-3">
         <label class="relative cursor-pointer group">
-          <input type="radio" name="userType" value="guest" class="peer sr-only"
-            <%= (!input.userType || input.userType === 'guest') ? 'checked' : '' %> required />
+          <input type="radio" name="userType" value="guest" class="peer sr-only" <%= (!input.userType || input.userType === 'guest') ? 'checked' : '' %> required />
           <div class="flex flex-col items-center gap-2 p-4 rounded-xl border-2
             border-gray-200 dark:border-[#2a2a2f]
             bg-gray-50 dark:bg-[#111114]
@@ -102,8 +101,7 @@
           </div>
         </label>
         <label class="relative cursor-pointer group">
-          <input type="radio" name="userType" value="host" class="peer sr-only"
-            <%= input.userType === 'host' ? 'checked' : '' %> />
+          <input type="radio" name="userType" value="host" class="peer sr-only" <%= input.userType === 'host' ? 'checked' : '' %> />
           <div class="flex flex-col items-center gap-2 p-4 rounded-xl border-2
             border-gray-200 dark:border-[#2a2a2f]
             bg-gray-50 dark:bg-[#111114]
@@ -119,15 +117,48 @@
         </label>
       </div>
       <% if (fieldError('userType')) { %>
-        <p class="text-xs text-red-500 dark:text-red-400"><%= fieldError('userType') %></p>
+      <p class="text-xs text-red-500 dark:text-red-400"><%= fieldError('userType') %></p>
       <% } %>
     </div>
 
+    <%# phone number — only visible when Host is selected %>
+    <div id="phoneField" class="flex flex-col gap-1.5" style="display: none;">
+      <%- include('../partials/form-field', {
+        id: 'phone',
+        name: 'phone',
+        label: 'Phone Number',
+        type: 'tel',
+        placeholder: '+91 98765 43210',
+        value: input.phone || '',
+        inputClass: inputClass('phone'),
+        errorMsg: fieldError('phone'),
+        hint: fieldError('phone') ? '' : 'Guests may contact you through this number.',
+        autocomplete: 'tel'
+      }) %>
+    </div>
+
+    <script>
+      (function() {
+        const phoneField = document.getElementById('phoneField');
+        const phoneInput = document.getElementById('phone');
+        const radios = document.querySelectorAll('input[name="userType"]');
+
+        function togglePhone() {
+          const isHost = document.querySelector('input[name="userType"]:checked')?.value === 'host';
+          phoneField.style.display = isHost ? '' : 'none';
+          phoneInput.required = isHost;
+        }
+
+        radios.forEach(r => r.addEventListener('change', togglePhone));
+
+        // on page load — restore state if "host" was previously selected (e.g. after validation error)
+        togglePhone();
+      })();
+    </script>
+
     <div class="flex flex-col gap-1.5">
       <label class="flex items-start gap-3 cursor-pointer group">
-        <input type="checkbox" name="terms" value="accepted"
-          class="mt-1 w-4 h-4 rounded border-gray-300 dark:border-[#2a2a2f] bg-white dark:bg-[#111114] accent-[#D6001C] cursor-pointer"
-          required />
+        <input type="checkbox" name="terms" value="accepted" class="mt-1 w-4 h-4 rounded border-gray-300 dark:border-[#2a2a2f] bg-white dark:bg-[#111114] accent-[#D6001C] cursor-pointer" required />
         <span class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
           I agree to the
           <a href="#" class="text-[#3b82f6] hover:text-blue-500 underline underline-offset-2">Terms & Conditions</a>
@@ -136,12 +167,11 @@
         </span>
       </label>
       <% if (fieldError('terms')) { %>
-        <p class="text-xs text-red-500 dark:text-red-400"><%= fieldError('terms') %></p>
+      <p class="text-xs text-red-500 dark:text-red-400"><%= fieldError('terms') %></p>
       <% } %>
     </div>
 
-    <button type="submit"
-      class="mt-1 bg-[#D6001C] hover:bg-[#b8001a] active:scale-[0.98] text-white text-sm font-semibold py-3 rounded-lg transition-all shadow-sm">
+    <button type="submit" class="mt-1 bg-[#D6001C] hover:bg-[#b8001a] active:scale-[0.98] text-white text-sm font-semibold py-3 rounded-lg transition-all shadow-sm">
       Create Account
     </button>
 
