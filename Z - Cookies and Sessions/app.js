@@ -29,6 +29,35 @@ app.use(express.static(path.join(rootDir, 'public')));
 
 const store = new MongoDBStore({ uri: DB_PATH, collection: 'sessions' });
 
+// Handle MongoDBStore connection errors gracefully (it connects independently of mongoose)
+store.on('error', async error => {
+	const msg = error.message || String(error);
+	const isIpWhitelistIssue =
+		/whitelist|IP that isn't|SSL|tlsv1|alert internal error/i.test(msg);
+
+	if (isIpWhitelistIssue) {
+		console.error(
+			'\nMongoDB session-store connection failed: your current IP is likely NOT on the Atlas IP Access List.',
+		);
+
+		try {
+			const res = await fetch('https://api.ipify.org?format=json');
+			const { ip } = await res.json();
+			console.error(`Your current public IP appears to be: ${ip}`);
+			console.error('Add this IP in Atlas if it is missing.\n');
+		} catch {
+			console.error(
+				'Could not detect public IP. Check https://whatismyipaddress.com/ and add that IP in Atlas.\n',
+			);
+		}
+	} else {
+		console.error('MongoDB session-store error:', error);
+	}
+
+	mongoose.connection.close();
+	process.exit(1);
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
@@ -41,6 +70,11 @@ app.use(
 );
 
 app.use(authRouter);
+
+app.use(['/favourites', '/bookings', '/homes/:homeId'], (req, res, next) => {
+	if (!req.session.isLoggedIn) return res.redirect('/login');
+	next();
+});
 app.use(storeRouter);
 
 app.use('/host', (req, res, next) => {
@@ -69,7 +103,8 @@ const PORT = 3000;
 		});
 	} catch (err) {
 		const msg = err.message || String(err);
-		const isIpWhitelistIssue = /whitelist|IP that isn't/i.test(msg);
+		const isIpWhitelistIssue =
+			/whitelist|IP that isn't|SSL|tlsv1|alert internal error/i.test(msg);
 
 		if (isIpWhitelistIssue) {
 			console.error(
@@ -90,6 +125,7 @@ const PORT = 3000;
 			console.error('Server failed to start :', err);
 		}
 
+		mongoose.connection.close();
 		process.exit(1);
 	}
 })();

@@ -12,7 +12,7 @@ exports.globalErrorHandler = (err, req, res, next) => {
 	res.status(500).render('500', {
 		pageTitle: '500 — Server Error',
 		currentPage: '500',
-		isLoggedIn: req.session.isLoggedIn,
-		user: req.session.user,
+		isLoggedIn: req.session?.isLoggedIn,
+		user: req.session?.user,
 	});
 };

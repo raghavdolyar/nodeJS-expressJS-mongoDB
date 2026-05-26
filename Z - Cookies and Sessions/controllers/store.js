@@ -4,7 +4,7 @@ const User = require('../models/user');
 exports.getIndex = async (req, res, next) => {
 	try {
 		const regHomes = await Home.find();
-		homes.sort((a, b) => b.rating - a.rating);
+		regHomes.sort((a, b) => b.rating - a.rating);
 		const homes = regHomes.slice(0, 4);
 
 		res.render('store/index', {
@@ -104,7 +104,7 @@ exports.postAddToFavourite = async (req, res, next) => {
 
 exports.postRemoveFromFavourite = async (req, res, next) => {
 	try {
-		const homeId = req.body.homeId;
+		const homeId = req.params.homeId;
 		const userId = req.session.user._id;
 
 		const deleted = await User.findByIdAndUpdate(userId, {
