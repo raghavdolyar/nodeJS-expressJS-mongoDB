@@ -1,0 +1,20 @@
+<%- include('../partials/head') %>
+
+<%- include('../partials/page-header', {
+  eyebrow: 'Homes',
+  titleHtml: 'Browse <span class="text-[#D6001C]">AirBnB</span> stays',
+  subtitle: 'Find the perfect place for your next trip.'
+}) %>
+
+<main class="w-full max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center sm:justify-items-stretch">
+    <% homes.forEach(home => { %>
+    <%- include('../partials/user-card', { home }) %>
+    <% }) %>
+  </div>
+</main>
+
+</div>
+</body>
+
+</html>
