@@ -13,8 +13,6 @@
         <span class="text-base">AirBnB</span>
       </a>
 
-      <% if (isLoggedIn) { %>
-      <% if (user && user.user_type === 'guest') { %>
       <div class="hidden sm:block w-px h-6 bg-gray-200 dark:bg-white/10 mx-1"></div>
       <div class="flex items-center gap-1 flex-wrap">
         <a href="/homes" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
@@ -24,6 +22,8 @@
           </svg>
           Homes
         </a>
+
+        <% if (isLoggedIn && user && user.user_type === 'guest') { %>
         <a href="/bookings" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                 <%= currentPage === 'bookings' ? 'bg-red-50 dark:bg-[#D6001C]/10 text-[#D6001C]' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white' %>">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="h-4 w-4 shrink-0">
@@ -38,10 +38,9 @@
           </svg>
           Favourites
         </a>
-      </div>
-      <% } else { %>
-      <div class="hidden sm:block w-px h-6 bg-gray-200 dark:bg-white/10 mx-1"></div>
-      <div class="flex items-center gap-1 flex-wrap">
+        <% } %>
+
+        <% if (isLoggedIn && user && user.user_type === 'host') { %>
         <a href="/host/home-list" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                 <%= currentPage === 'host-homes' ? 'bg-red-50 dark:bg-[#D6001C]/10 text-[#D6001C]' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white' %>">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="h-4 w-4 shrink-0">
@@ -56,9 +55,8 @@
           </svg>
           Add Home
         </a>
+        <% } %>
       </div>
-      <% } %>
-      <% } %>
     </div>
 
     <% if (!isLoggedIn) { %>
