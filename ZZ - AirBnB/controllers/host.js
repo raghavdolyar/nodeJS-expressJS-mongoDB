@@ -51,16 +51,23 @@ exports.getHostHomes = async (req, res, next) => {
 
 exports.postAddHome = async (req, res, next) => {
 	try {
-		const { housename, location, price, rating, photoUrl, description } =
-			req.body;
+		const { housename, location, price, rating, description } = req.body;
 		const hostId = req.session.user._id;
+
+		if (!req.file) {
+			console.log('no image provided');
+			return res.redirect('/');
+		}
+
+		const photo =
+			req.body.photoUrl || (req.file ? `/uploads/${req.file.filename}` : '');
 
 		await Home.create({
 			name: housename.trim(),
 			location: location.trim(),
 			price_per_night: parseFloat(price.trim()),
 			rating: parseFloat(rating.trim()),
-			photo_url: photoUrl.trim(),
+			photo_url: photo.trim(),
 			description: description.trim(),
 			host_id: hostId,
 		});

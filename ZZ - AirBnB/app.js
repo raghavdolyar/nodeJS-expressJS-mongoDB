@@ -1,9 +1,11 @@
 // core modules
 const path = require('path');
+const fs = require('fs');
 
 // external modules
 const express = require('express');
 const session = require('express-session');
+const multer = require('multer');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 // database things
@@ -18,14 +20,9 @@ const { hostRouter } = require('./routes/host');
 const { errorRouter } = require('./routes/error');
 const { globalErrorHandler } = require('./controllers/error');
 const rootDir = require('./utils/path-util');
+const { randomString } = require('./utils/random-string');
 
 const app = express();
-
-app.set('view engine', 'ejs');
-app.set('views', 'views');
-
-// granting access to public folder
-app.use(express.static(path.join(rootDir, 'public')));
 
 const store = new MongoDBStore({ uri: DB_PATH, collection: 'sessions' });
 
@@ -58,8 +55,6 @@ store.on('error', async error => {
 	process.exit(1);
 });
 
-app.use(express.urlencoded({ extended: true }));
-
 app.use(
 	session({
 		secret: 'airbnb secret',
@@ -79,10 +74,35 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+app.use(express.static(path.join(rootDir, 'public'))); // granting access to public folder
+app.use(express.urlencoded({ extended: true }));
+
+fs.mkdirSync(path.join(rootDir, 'public', 'uploads'), { recursive: true }); // ensure uploads directory exists before multer writes to it
+
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, './public/uploads/');
+	},
+	filename: (req, file, cb) => {
+		cb(null, randomString(10) + '-' + file.originalname);
+	},
+});
+
+const fileFilter = (req, file, cb) => {
+	if (['image/jpeg', 'images/jpg', 'image/png'].includes(file.mimetype)) {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
+
+app.use(multer({ storage, fileFilter }).single('photoFile')); // since field name in edit-home.ejs is photo
+
 app.use(authRouter);
-
 app.use(storeRouter);
-
 app.use('/host', hostRouter);
 
 app.use(errorRouter);
