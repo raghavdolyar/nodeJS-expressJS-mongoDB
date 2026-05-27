@@ -17,12 +17,12 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
       </svg>
     </div>
-    
+
     <div class="max-w-md">
       <h3 class="text-gray-900 dark:text-white font-bold text-xl mb-1.5">No bookings yet</h3>
       <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">It looks like you haven't planned your next adventure. Browse our handpicked homes and start packing your bags.</p>
     </div>
-    
+
     <a href="/homes" class="inline-flex items-center justify-center px-6 py-2.5 bg-[#D6001C] hover:bg-[#D84E55] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm mt-2">
       Start Exploring
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1.5">
@@ -53,17 +53,13 @@
       %>
 
     <div class="group relative bg-white dark:bg-[#161618] rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-md border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-colors">
-      
+
       <%# Left Image Area %>
       <div class="relative w-full md:w-56 h-48 md:h-auto shrink-0 overflow-hidden">
         <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent z-10"></div>
         <img src="<%= home.photo_url %>" alt="<%= home.name %>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        
-        <%# Status Badge Overlay %>
-        <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full <%= style.bg %> <%= style.border %> border backdrop-blur-md">
-          <div class="w-1.5 h-1.5 rounded-full <%= style.text.replace('text-', 'bg-') %>"></div>
-          <span class="text-[10px] font-bold uppercase tracking-wider <%= style.text %>"><%= statusLabel %></span>
-        </div>
+
+
 
         <%# Price Overlay %>
         <div class="absolute bottom-3 left-3 z-20 flex flex-col">
@@ -76,18 +72,27 @@
 
       <%# Right Content Area %>
       <div class="flex flex-col flex-1 p-5 md:p-6 justify-between gap-5">
-        
+
         <div class="flex flex-col gap-4">
           <%# Header %>
-          <div>
-            <h3 class="text-gray-900 dark:text-white font-bold text-lg md:text-xl leading-tight mb-1.5 group-hover:text-[#D84E55] transition-colors line-clamp-2">
-              <%= home.name %>
-            </h3>
-            <div class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-sm font-medium">
-              <svg class="w-3.5 h-3.5 text-[#D84E55]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-              </svg>
-              <%= home.location %>
+          <%# Header %>
+          <div class="flex justify-between items-start gap-4">
+            <div>
+              <h3 class="text-gray-900 dark:text-white font-bold text-lg md:text-xl leading-tight mb-1.5 group-hover:text-[#D84E55] transition-colors line-clamp-2">
+                <%= home.name %>
+              </h3>
+              <div class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-sm font-medium">
+                <svg class="w-3.5 h-3.5 text-[#D84E55]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+                </svg>
+                <%= home.location %>
+              </div>
+            </div>
+
+            <%# Status Badge %>
+            <div class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full <%= style.bg %> <%= style.border %> border">
+              <div class="w-1.5 h-1.5 shrink-0 rounded-full hidden <%= style.text.replace('text-', 'bg-') %>"></div>
+              <span class="text-[10px] font-bold uppercase tracking-wider <%= style.text %>"><%= statusLabel %></span>
             </div>
           </div>
 
@@ -97,7 +102,7 @@
               <span class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-0.5">Check In</span>
               <span class="text-gray-900 dark:text-white font-semibold text-sm md:text-base"><%= fmtDate(checkIn) %></span>
             </div>
-            
+
             <div class="flex flex-col items-center justify-center px-1">
               <div class="flex items-center gap-1.5 w-full">
                 <div class="h-px flex-1 bg-gray-200 dark:bg-white/10"></div>

@@ -20,14 +20,40 @@
     }
   </style>
   <script>
-    // Apply saved theme before paint to avoid flash
-    (function() {
+    // apply saved theme before paint to avoid flash
+    (() => {
       const saved = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (saved === 'dark' || (!saved && prefersDark)) {
         document.documentElement.classList.add('dark');
       }
     })();
+
+    // re-apply theme when page is restored from bfcache (back/forward navigation)
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const shouldBeDark = saved === 'dark' || (!saved && prefersDark);
+
+        // freeze all transitions so the theme swap is instant (no visible flash)
+        const noTransition = document.createElement('style');
+        noTransition.textContent = '*,*::before,*::after{transition:none!important}';
+        document.head.appendChild(noTransition);
+
+        if (shouldBeDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+
+        // double rAF: let the browser commit one paint with the new class,
+        // then remove the override so normal transitions resume cleanly
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          document.head.removeChild(noTransition);
+        }));
+      }
+    });
   </script>
 </head>
 
