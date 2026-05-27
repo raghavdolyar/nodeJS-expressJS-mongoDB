@@ -13,7 +13,7 @@ router.get('/homes', storeController.getHomes);
 // logged in only
 router.get('/homes/:homeId', requireLogin, storeController.getHomeDetails);
 
-// gues only
+// guest only
 router.get(
 	'/bookings',
 	requireLogin,

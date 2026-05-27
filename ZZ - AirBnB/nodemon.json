@@ -1,5 +1,5 @@
 {
 	"watch": ["."],
 	"ext": "js,json",
-	"ignore": ["node_modules/", "database/"]
+	"ignore": ["node_modules/", "data/"]
 }

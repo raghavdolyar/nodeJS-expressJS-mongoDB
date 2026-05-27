@@ -1,4 +1,4 @@
-<nav class="w-full bg-white dark:bg-[#111114] border-b border-gray-200 dark:border-white/8 shadow-sm dark:shadow-black/20">
+<nav class="sticky top-0 z-40 w-full bg-white dark:bg-[#111114] border-b border-gray-200 dark:border-white/8 shadow-sm dark:shadow-black/20">
   <div class="w-full flex items-center justify-between gap-4 px-3 sm:px-4 py-2">
 
     <div class="flex items-center gap-1 min-w-0">
@@ -85,8 +85,11 @@
          const avatarColor = user.user_type === 'host' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400';
          const fullName = (user.first_name || '') + (user.last_name ? ' ' + user.last_name : '');
       %>
-      <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm tracking-tight <%= avatarColor %>" title="<%= fullName.trim() || 'User' %>">
-        <%= initials %>
+      <div class="relative inline-block text-left" id="profile-menu-container">
+        <button type="button" id="profile-button" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm tracking-tight hover:ring-2 hover:ring-offset-2 hover:ring-gray-200 dark:hover:ring-gray-700 dark:ring-offset-[#111114] transition-all cursor-pointer focus:outline-none <%= avatarColor %>" title="<%= fullName.trim() || 'User' %>">
+          <%= initials %>
+        </button>
+        <%- include('./profile-menu', { user, initials, avatarColor, fullName }) %>
       </div>
       <form action="/logout" method="POST" class="shrink-0">
         <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
@@ -104,3 +107,27 @@
 
   </div>
 </nav>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const profileBtn = document.getElementById('profile-button');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    
+    if (profileBtn && profileDropdown) {
+      profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('opacity-0');
+        profileDropdown.classList.toggle('scale-95');
+        profileDropdown.classList.toggle('pointer-events-none');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!profileDropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+          profileDropdown.classList.add('opacity-0');
+          profileDropdown.classList.add('scale-95');
+          profileDropdown.classList.add('pointer-events-none');
+        }
+      });
+    }
+  });
+</script>

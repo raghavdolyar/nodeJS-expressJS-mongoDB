@@ -1,0 +1,109 @@
+<%- include('../partials/head') %>
+
+<%
+  const errors = validationErrors || [];
+  const fieldError = (path) => errors.find(err => err.path === path)?.msg;
+  const input = oldInput || {};
+  const inputClass = (path) =>
+    'bg-gray-50 dark:bg-[#111114] text-gray-900 dark:text-white text-sm px-4 py-2.5 rounded-lg border focus:outline-none focus:border-[#D6001C] focus:ring-1 focus:ring-[#D6001C]/20 transition-colors placeholder-gray-400 dark:placeholder-gray-600 ' +
+    (fieldError(path) ? 'border-red-400 dark:border-red-500/70' : 'border-gray-200 dark:border-[#2a2a2f]');
+%>
+
+<div class="w-[370px] min-w-[360px]  max-w-md mt-5">
+  <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+    Edit <span class="text-[#D6001C]">Profile</span>
+  </h2>
+  <p class="text-gray-400 dark:text-gray-500 text-sm text-center mb-8">Update your personal information</p>
+
+  <%- include('../partials/validation-errors') %>
+
+  <form action="/profile/edit" method="POST" class="bg-white dark:bg-[#1a1a1f] rounded-2xl p-7 flex flex-col gap-4 shadow-sm dark:shadow-xl border border-gray-100 dark:border-white/6">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <%- include('../partials/form-field', {
+        id: 'firstName',
+        name: 'firstName',
+        label: 'First Name',
+        placeholder: 'John',
+        value: input.firstName || '',
+        inputClass: inputClass('firstName'),
+        errorMsg: fieldError('firstName'),
+        autocomplete: 'given-name',
+        required: true
+      }) %>
+      <%- include('../partials/form-field', {
+        id: 'lastName',
+        name: 'lastName',
+        label: 'Last Name',
+        placeholder: 'Doe',
+        value: input.lastName || '',
+        inputClass: inputClass('lastName'),
+        errorMsg: fieldError('lastName'),
+        autocomplete: 'family-name'
+      }) %>
+    </div>
+
+    <!-- Email is read-only here, usually requires a separate verification flow to change -->
+    <div class="flex flex-col gap-1.5 opacity-60 pointer-events-none">
+      <%- include('../partials/form-field', {
+        id: 'email',
+        name: 'email',
+        label: 'Email',
+        type: 'email',
+        placeholder: 'you@example.com',
+        value: input.email || '',
+        inputClass: inputClass('email'),
+        errorMsg: '',
+        autocomplete: 'email',
+        required: true
+      }) %>
+    </div>
+
+    <% if (user.user_type === 'host') { %>
+    <div class="flex flex-col gap-1.5">
+      <%- include('../partials/form-field', {
+          id: 'phone',
+          name: 'phone',
+          label: 'Phone Number',
+          type: 'tel',
+          placeholder: '+91 98765 43210',
+          value: input.phone || '',
+          inputClass: inputClass('phone'),
+          errorMsg: fieldError('phone'),
+          hint: fieldError('phone') ? '' : 'Guests may contact you through this number.',
+          autocomplete: 'tel',
+          required: true
+        }) %>
+    </div>
+    <% } %>
+
+    <div class="pt-4 mt-2 border-t border-gray-100 dark:border-white/5 flex flex-col gap-3">
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button type="submit" class="flex-1 bg-[#D6001C] hover:bg-[#b8001a] active:scale-[0.98] text-white text-sm font-semibold py-2.5 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2">
+          Save Changes
+        </button>
+
+        <a href="/" class="flex-1 bg-white dark:bg-[#1a1a1f] hover:bg-gray-50 dark:hover:bg-[#2a2a2f] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2a2a2f] active:scale-[0.98] text-sm font-semibold py-2.5 rounded-lg transition-colors shadow-sm flex items-center justify-center text-center">
+          Cancel
+        </a>
+      </div>
+
+      <div class="flex justify-center w-full">
+        <button type="button" onclick="alert('Change password functionality coming soon!')" class="w-[68%] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98] text-sm font-semibold py-2.5 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+          </svg>
+          Change Password
+        </button>
+      </div>
+
+    </div>
+
+  </form>
+</div>
+
+</div>
+</body>
+
+</html>

@@ -54,11 +54,6 @@ exports.postAddHome = async (req, res, next) => {
 		const { housename, location, price, rating, description } = req.body;
 		const hostId = req.session.user._id;
 
-		if (!req.file) {
-			console.log('no image provided');
-			return res.redirect('/');
-		}
-
 		const photo = req.file
 			? `/uploads/${req.file.filename}`
 			: req.body.photoUrl?.trim() || '';

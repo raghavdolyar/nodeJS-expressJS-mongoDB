@@ -129,6 +129,11 @@ exports.postSignup = [
 ];
 
 exports.postLogin = [
+	body('loginType')
+		.notEmpty()
+		.withMessage('Please select whether you are a guest or host.')
+		.isIn(['guest', 'host'])
+		.withMessage('Account type must be either guest or host.'),
 	body('email')
 		.trim()
 		.toLowerCase()
@@ -139,9 +144,9 @@ exports.postLogin = [
 	body('password').notEmpty().withMessage('Password is required.'),
 
 	async (req, res, next) => {
-		const { email, password } = req.body;
+		const { email, password, loginType } = req.body;
 		const errors = validationResult(req);
-		const oldInput = { email };
+		const oldInput = { email, loginType };
 
 		if (!errors.isEmpty()) {
 			return res.status(422).render('auth/login', {
@@ -155,14 +160,10 @@ exports.postLogin = [
 		try {
 			const invalidLogin = { path: 'email', msg: 'Invalid email or password.' };
 
-			// search guests first, then hosts
-			let user = await Guest.findOne({ email });
-			let user_type = 'guest';
-
-			if (!user) {
-				user = await Host.findOne({ email });
-				user_type = 'host';
-			}
+			// query only the collection the user selected
+			const Model = loginType === 'host' ? Host : Guest;
+			const user = await Model.findOne({ email });
+			const user_type = loginType;
 
 			if (!user) {
 				return res.status(422).render('auth/login', {
@@ -185,7 +186,7 @@ exports.postLogin = [
 			}
 
 			req.session.isLoggedIn = true;
-			
+
 			req.session.user = {
 				_id: user._id.toString(),
 				user_type, // 'guest' or 'host'
@@ -211,6 +212,126 @@ exports.postLogout = async (req, res, next) => {
 			req.session.destroy(err => (err ? reject(err) : resolve()));
 		});
 		res.clearCookie('connect.sid');
+		res.redirect('/');
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getEditProfile = async (req, res, next) => {
+	try {
+		const Model = req.session.user.user_type === 'host' ? Host : Guest;
+		const user = await Model.findById(req.session.user._id);
+
+		if (!user) {
+			console.log('user not found');
+			return res.redirect('/signup');
+		}
+
+		res.render('auth/edit-profile', {
+			pageTitle: 'edit profile',
+			currentPage: 'profile',
+			oldInput: {
+				firstName: user.first_name,
+				lastName: user.last_name,
+				email: user.email,
+				phone: user.phone || '',
+			},
+			validationErrors: [],
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.postEditProfile = [
+	body('firstName')
+		.trim()
+		.notEmpty()
+		.withMessage('First name is required.')
+		.isLength({ min: 2, max: 50 })
+		.withMessage('First name must be between 2 and 50 characters.')
+		.matches(NAME_REGEX)
+		.withMessage(
+			'First name may only contain letters, spaces, hyphens, and apostrophes.',
+		),
+	body('lastName')
+		.optional({ values: 'falsy' })
+		.trim()
+		.isLength({ min: 2, max: 50 })
+		.withMessage('Last name must be between 2 and 50 characters.')
+		.matches(NAME_REGEX)
+		.withMessage(
+			'Last name may only contain letters, spaces, hyphens, and apostrophes.',
+		),
+	body('phone')
+		.if(
+			(value, { req }) =>
+				req.session.user && req.session.user.user_type === 'host',
+		)
+		.trim()
+		.notEmpty()
+		.withMessage('Phone number is required for hosts.')
+		.matches(PHONE_REGEX)
+		.withMessage('Please enter a valid phone number.'),
+
+	async (req, res, next) => {
+		const { firstName, lastName, phone } = req.body;
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			return res.status(422).render('auth/edit-profile', {
+				pageTitle: 'Edit Profile',
+				currentPage: 'profile',
+				oldInput: { firstName, lastName, email: req.session.user.email, phone },
+				validationErrors: errors.array(),
+			});
+		}
+
+		try {
+			const Model = req.session.user.user_type === 'host' ? Host : Guest;
+			const updateData = { first_name: firstName, last_name: lastName || '' };
+			if (req.session.user.user_type === 'host') {
+				updateData.phone = phone;
+			}
+
+			await Model.findByIdAndUpdate(req.session.user._id, updateData);
+
+			req.session.user.first_name = firstName;
+			req.session.user.last_name = lastName || '';
+
+			await new Promise((resolve, reject) => {
+				req.session.save(err => (err ? reject(err) : resolve()));
+			});
+
+			res.redirect('/');
+		} catch (err) {
+			console.error(err);
+			next(err);
+		}
+	},
+];
+
+exports.getDeleteProfile = (req, res, next) => {
+	res.render('auth/delete-profile', {
+		pageTitle: 'delete account',
+		currentPage: 'profile',
+	});
+};
+
+exports.postDeleteProfile = async (req, res, next) => {
+	try {
+		const Model = req.session.user.user_type === 'host' ? Host : Guest;
+
+		// findOneAndDelete triggers hooks that delete related bookings/homes
+		await Model.findOneAndDelete({ _id: req.session.user._id });
+
+		await new Promise((resolve, reject) => {
+			req.session.destroy(err => (err ? reject(err) : resolve()));
+		});
+
+		res.clearCookie('connect.sid');
+		
 		res.redirect('/');
 	} catch (err) {
 		next(err);
