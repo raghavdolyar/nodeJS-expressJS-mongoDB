@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import {
 	deleteTodo,
 	updateTodo,
-	toggleComplete,
-} from '../features/todo/todoSlice';
+	toggleCompleteTodo,
+} from '../features/todoThunks';
 
 const Todo = React.memo(({ todo }) => {
 	const dispatch = useDispatch();
@@ -41,7 +41,10 @@ const Todo = React.memo(({ todo }) => {
 	);
 
 	return (
-		<li className='flex items-center gap-3 py-1.5 border-b border-[#ebebeb] text-[13px] hover:bg-[#f8f8f8] transition-colors'>
+		<li
+			className={`flex items-center gap-3 py-1.5 border-b border-[#ebebeb] text-[13px] hover:bg-[#f8f8f8] transition-colors ${
+				todo.isTemp ? 'opacity-50 pointer-events-none' : ''
+			}`}>
 			{isEditing ? (
 				<>
 					<input
@@ -61,7 +64,7 @@ const Todo = React.memo(({ todo }) => {
 					<input
 						type='checkbox'
 						checked={todo.completed || false}
-						onChange={() => dispatch(toggleComplete(todo.id))}
+						onChange={() => dispatch(toggleCompleteTodo(todo.id))}
 						className='cursor-pointer w-3.5 h-3.5'
 					/>
 					<span

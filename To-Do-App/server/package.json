@@ -8,19 +8,15 @@
 	"main": "app.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"tailwind": "npx @tailwindcss/cli -i ./views/input.css -o ./public/output.css --watch",
 		"start": "nodemon app.js"
 	},
 	"devDependencies": {
-		"@types/mongodb": "^4.0.6",
 		"nodemon": "^3.1.14"
 	},
 	"dependencies": {
-		"@tailwindcss/cli": "^4.3.0",
+		"cors": "^2.8.6",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
-		"mongodb": "^7.2.0",
-		"mongoose": "^9.6.2",
-		"tailwindcss": "^4.3.0"
+		"mongoose": "^9.6.2"
 	}
 }

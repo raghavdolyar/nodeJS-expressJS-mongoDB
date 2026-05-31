@@ -1,10 +1,8 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') }); // load env variables first
 
-// core modules
-const path = require('path');
-
 // external modules
 const express = require('express');
+const cors = require('cors');
 
 // database modules
 const { default: mongoose } = require('mongoose');
@@ -12,14 +10,18 @@ const DB_PATH = `mongodb://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_
 
 // local modules
 const errorController = require('./controllers/error');
-const rootDir = require('./utils/path-util');
+const { todoRouter } = require('./routers/todo');
 
 const app = express();
 
-app.use(express.static(path.join(rootDir, 'public'))); // granting access to public folder
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 app.use(express.json());
 
+app.use('/todos', todoRouter);
+
 app.use(errorController.pageNotFound);
+app.use(errorController.globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 

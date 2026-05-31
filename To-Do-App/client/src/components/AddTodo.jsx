@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addTodo } from '../features/todo/todoSlice';
+import { addTodo } from '../features/todoThunks';
 
 export default function AddTodo() {
 	const [task, setTask] = useState('');
