@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+@layer base {
+	body {
+		font-family: Verdana, Geneva, Arial, 'Helvetica Neue', sans-serif;
+		background-color: #f0f0f0;
+		color: #333;
+		font-size: 13px;
+	}
+}
